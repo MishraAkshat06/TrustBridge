@@ -197,6 +197,30 @@ def verify_kyc():
         "disclaimer": "This is an off-chain identity verification sandbox."
     })
 
+# -----------------------------------------------------------------------------
+# Authentication Endpoints (Google SSO & Web3)
+# -----------------------------------------------------------------------------
+@app.route("/api/auth/google", methods=["POST"])
+def auth_google():
+    data = request.get_json() or {}
+    email = data.get("email", "user@gmail.com")
+    name = data.get("name", "Google User")
+    avatar = data.get("avatar", "")
+    role = data.get("role", "Contributor")
+    
+    return jsonify({
+        "status": "authenticated",
+        "provider": "google",
+        "user": {
+            "name": name,
+            "email": email,
+            "avatar": avatar,
+            "role": role,
+            "kycStatus": "Google SSO Verified"
+        },
+        "token": f"tb_g_{uuid.uuid4().hex[:16]}"
+    })
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"TrustBridge Flask Backend starting on port {port}...")

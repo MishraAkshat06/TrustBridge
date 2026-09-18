@@ -21,6 +21,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('Contributor');
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -34,10 +35,36 @@ export default function Auth() {
   }
 
   function handleGoogleAuth() {
+    setShowGoogleModal(true);
+  }
+
+  async function selectGoogleAccount(acc) {
+    setShowGoogleModal(false);
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: acc.email,
+          name: acc.name,
+          role,
+          avatar: acc.avatar
+        })
+      });
+      const data = await res.json();
+      if (data?.user) {
+        loginOrRegister(data.user);
+        setCurrentView('Campaign');
+        return;
+      }
+    } catch (err) {
+      console.warn('Backend google auth offline, fallback local:', err);
+    }
     loginOrRegister({
-      name: 'Google Verified User',
-      email: 'user@gmail.com',
-      role: 'Contributor',
+      name: acc.name,
+      email: acc.email,
+      role,
+      avatar: acc.avatar,
       kycStatus: 'Google SSO Verified'
     });
     setCurrentView('Campaign');
@@ -367,6 +394,63 @@ export default function Auth() {
         </div>
 
       </div>
+
+      {/* Google SSO Accounts Picker Modal */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
+          <div className="w-full max-w-sm rounded-3xl bg-white border border-slate-200 shadow-2xl p-6 text-black space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" />
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" />
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                </svg>
+                <span className="text-sm font-bold text-slate-800">Sign in with Google</span>
+              </div>
+              <button 
+                onClick={() => setShowGoogleModal(false)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-black hover:bg-slate-100 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Choose an account to continue to <strong className="text-slate-800">TrustBridge Protocol</strong>
+            </p>
+
+            <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto">
+              {[
+                { name: 'Alex Turner', email: 'alex.turner@gmail.com', avatar: 'AT', color: 'bg-indigo-600' },
+                { name: 'Sarah Chen', email: 'sarah.chen@gmail.com', avatar: 'SC', color: 'bg-emerald-600' },
+                { name: 'Akshar Vikram', email: 'akshar.vikram@gmail.com', avatar: 'AV', color: 'bg-cyan-600' },
+                { name: 'David Kumar', email: 'david.kumar@trustbridge.io', avatar: 'DK', color: 'bg-amber-600' }
+              ].map((acc) => (
+                <button
+                  key={acc.email}
+                  onClick={() => selectGoogleAccount(acc)}
+                  className="w-full py-3 px-2 flex items-center space-x-3 hover:bg-slate-50 rounded-xl transition text-left group"
+                >
+                  <div className={`w-9 h-9 rounded-full ${acc.color} text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
+                    {acc.avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-bold text-slate-900 truncate">{acc.name}</div>
+                    <div className="text-[11px] text-slate-500 truncate">{acc.email}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Google Identity SSO</span>
+              <span className="text-[#15966D] font-semibold">✓ Verified Session</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

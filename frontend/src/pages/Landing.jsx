@@ -46,27 +46,27 @@ export default function Landing({ isDarkMode = false }) {
               {/* Badge Tag */}
               <div className={`inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-[11px] font-semibold border ${
                 isDarkMode 
-                  ? 'bg-[#121622] border-[#20293D] text-[#10B981]' 
-                  : 'bg-white border-[#E5E2DC] text-[#64748B] shadow-2xs'
+                  ? 'bg-[#181A20] border-[#2B313A] text-[#F0B90B]' 
+                  : 'bg-white border-emerald-200 text-[#00875A] shadow-2xs'
               }`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                <span className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-[#F0B90B]' : 'bg-[#00D09C]'}`}></span>
                 <span>AI-Assisted • Blockchain-Enforced • Milestone Crowdfunding</span>
               </div>
 
-              {/* Headline in Big Bold Black */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.12] text-black">
+              {/* Headline in Big Bold Responsive Theme Color */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.12] text-[#111827] dark:text-[#EAECEF]">
                 Transparent Crowdfunding Backed by{' '}
-                <span className="text-[#15966D]">
+                <span className="text-[#00D09C] dark:text-[#F0B90B]">
                   AI Auditing &amp;
                 </span>{' '}
-                <span className="text-[#15966D]">
+                <span className="text-[#009379] dark:text-[#FCD535]">
                   Programmable Escrow
                 </span>
               </h1>
 
               {/* Sub-paragraph */}
               <p className={`text-sm sm:text-base leading-relaxed max-w-xl ${
-                isDarkMode ? 'text-slate-400' : 'text-[#64748B]'
+                isDarkMode ? 'text-[#848E9C]' : 'text-[#475569]'
               }`}>
                 TrustBridge replaces blind trust with launch-time machine learning predictions, agentic evidence review, and strict on-chain milestone disbursements on Ethereum Sepolia.
               </p>
@@ -75,7 +75,11 @@ export default function Landing({ isDarkMode = false }) {
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button
                   onClick={() => setCurrentView('Explore')}
-                  className="px-6 py-3.5 rounded-full bg-[#009379] hover:bg-[#007E67] text-white font-bold text-sm transition-all flex items-center space-x-2 shadow-[0_0_20px_rgba(0,147,121,0.35)]"
+                  className={`px-6 py-3.5 rounded-full font-bold text-sm transition-all flex items-center space-x-2 cursor-pointer ${
+                    isDarkMode
+                      ? 'bg-[#F0B90B] hover:bg-[#FCD535] text-black shadow-[0_0_20px_rgba(240,185,11,0.35)]'
+                      : 'bg-gradient-to-r from-[#00D09C] to-[#009379] hover:brightness-105 text-white shadow-[0_0_20px_rgba(0,208,156,0.35)]'
+                  }`}
                 >
                   <span>Explore Live Escrow Vaults</span>
                   <ArrowRight className="w-4 h-4" />
@@ -83,42 +87,42 @@ export default function Landing({ isDarkMode = false }) {
 
                 <button
                   onClick={() => setCurrentView('Create')}
-                  className={`px-6 py-3.5 rounded-full font-semibold text-sm border transition-all flex items-center space-x-2 ${
+                  className={`px-6 py-3.5 rounded-full font-semibold text-sm border transition-all flex items-center space-x-2 cursor-pointer ${
                     isDarkMode 
-                      ? 'bg-[#101522] hover:bg-[#182032] border-[#222C42] text-white' 
-                      : 'bg-white hover:bg-slate-50 border-[#E5E2DC] text-[#111827] shadow-2xs'
+                      ? 'bg-[#181A20] hover:bg-[#1E2329] border-[#2B313A] text-[#EAECEF]' 
+                      : 'bg-white hover:bg-slate-50 border-[#E2E8F0] text-[#111827] shadow-2xs'
                   }`}
                 >
-                  <PlusCircle className="w-4 h-4 text-[#64748B]" />
+                  <PlusCircle className={`w-4 h-4 ${isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'}`} />
                   <span>Create a Campaign</span>
                 </button>
               </div>
 
               {/* 4 Feature Chips */}
               <div className={`flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t text-xs font-medium ${
-                isDarkMode ? 'border-[#1C2538] text-slate-400' : 'border-[#EAE6DF] text-[#64748B]'
+                isDarkMode ? 'border-[#2B313A] text-[#848E9C]' : 'border-[#E2E8F0] text-[#475569]'
               }`}>
                 <div className="flex items-center space-x-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+                  <ShieldCheck className={`w-3.5 h-3.5 ${isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'}`} />
                   <span>On-chain Transparency</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#10B981]" />
+                  <TrendingUp className={`w-3.5 h-3.5 ${isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'}`} />
                   <span>AI Risk Analysis</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Shield className="w-3.5 h-3.5 text-[#10B981]" />
+                  <Shield className={`w-3.5 h-3.5 ${isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'}`} />
                   <span>Automatic Refunds</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Users className="w-3.5 h-3.5 text-[#10B981]" />
+                  <Users className={`w-3.5 h-3.5 ${isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'}`} />
                   <span>Built for Real Builders</span>
                 </div>
               </div>
 
               {/* Secure Transparent Footnote */}
               {isDarkMode && (
-                <div className="pt-2 text-[10px] font-mono tracking-widest text-slate-500 uppercase">
+                <div className="pt-2 text-[10px] font-mono tracking-widest text-[#848E9C] uppercase">
                   SECURE • TRANSPARENT • ACCOUNTABLE
                 </div>
               )}
@@ -183,23 +187,23 @@ export default function Landing({ isDarkMode = false }) {
         <span>SCROLL TO EXPLORE</span>
       </div>
 
-      {/* The Core Loop Section (Floating Light Card Container in Dark Mode) */}
+      {/* The Core Loop Section */}
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className={`rounded-3xl p-8 sm:p-12 border shadow-xl space-y-10 ${
           isDarkMode 
-            ? 'bg-[#ECE9E2] text-[#111827] border-[#DFDBD2]' 
-            : 'bg-white text-[#111827] border-[#E7E5DF]'
+            ? 'bg-[#181A20] text-[#EAECEF] border-[#2B313A]' 
+            : 'bg-white text-[#111827] border-[#E2E8F0]'
         }`}>
           <div className="text-center space-y-2 max-w-xl mx-auto">
-            <div className="flex items-center justify-center space-x-3 text-xs font-mono font-bold tracking-widest text-[#64748B] uppercase">
-              <span className="w-8 h-px bg-slate-300"></span>
+            <div className="flex items-center justify-center space-x-3 text-xs font-mono font-bold tracking-widest text-[#64748B] dark:text-[#848E9C] uppercase">
+              <span className="w-8 h-px bg-slate-300 dark:bg-[#2B313A]"></span>
               <span>The Core Loop</span>
-              <span className="w-8 h-px bg-slate-300"></span>
+              <span className="w-8 h-px bg-slate-300 dark:bg-[#2B313A]"></span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+            <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${isDarkMode ? 'text-[#EAECEF]' : 'text-[#111827]'}`}>
               How TrustBridge Guarantees Accountability
             </h2>
-            <p className="text-xs sm:text-sm text-[#64748B]">
+            <p className={`text-xs sm:text-sm ${isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}`}>
               From idea to impact, every step is verified, transparent, and automated.
             </p>
           </div>
@@ -209,15 +213,15 @@ export default function Landing({ isDarkMode = false }) {
             {[
               {
                 step: '01',
-                badgeColor: 'bg-emerald-50 text-[#009379] border-emerald-200',
+                badgeColor: isDarkMode ? 'bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/30' : 'bg-emerald-50 text-[#009379] border-emerald-200',
                 title: 'Pre-Launch ML Audit',
                 desc: 'Logistic Regression & Random Forest models score success probability and flag structural budget anomalies at launch time.',
                 icon: Brain,
-                iconColor: 'text-[#111827]'
+                iconColor: isDarkMode ? 'text-[#F0B90B]' : 'text-[#00D09C]'
               },
               {
                 step: '02',
-                badgeColor: 'bg-blue-50 text-[#3B82F6] border-blue-200',
+                badgeColor: isDarkMode ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' : 'bg-blue-50 text-[#3B82F6] border-blue-200',
                 title: 'Smart Escrow Deposit',
                 desc: 'Backers fund campaigns with ETH. Smart contract enforces a strict 20 ETH ceiling and automatically refunds excess in-block.',
                 icon: Shield,
@@ -225,15 +229,15 @@ export default function Landing({ isDarkMode = false }) {
               },
               {
                 step: '03',
-                badgeColor: 'bg-amber-50 text-[#D97706] border-amber-200',
+                badgeColor: isDarkMode ? 'bg-[#F0B90B]/10 text-[#F0B90B] border-[#F0B90B]/30' : 'bg-amber-50 text-[#D97706] border-amber-200',
                 title: 'Milestone Proofs',
                 desc: 'Creators execute roadmap tranches and upload cryptographic proof, GitHub commits, or bench test telemetry.',
                 icon: Layers,
-                iconColor: 'text-[#111827]'
+                iconColor: isDarkMode ? 'text-[#F0B90B]' : 'text-[#111827]'
               },
               {
                 step: '04',
-                badgeColor: 'bg-purple-50 text-[#8B5CF6] border-purple-200',
+                badgeColor: isDarkMode ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-purple-50 text-[#8B5CF6] border-purple-200',
                 title: 'Verifier Disbursement',
                 desc: 'Authorized signers inspect AI evidence extraction to trigger tranche releases. Unreached goals allow instant backer refunds.',
                 icon: CheckCircle2,
@@ -242,7 +246,11 @@ export default function Landing({ isDarkMode = false }) {
             ].map((item) => (
               <div
                 key={item.step}
-                className="bg-white border border-[#DDD8CE] rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm card-3d"
+                className={`border rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm card-3d ${
+                  isDarkMode 
+                    ? 'bg-[#1E2329] border-[#2B313A] text-[#EAECEF]' 
+                    : 'bg-white border-[#E2E8F0] text-[#111827]'
+                }`}
               >
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${item.badgeColor}`}>
@@ -252,10 +260,10 @@ export default function Landing({ isDarkMode = false }) {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-black tracking-tight">
+                  <h3 className={`text-base font-bold tracking-tight ${isDarkMode ? 'text-[#EAECEF]' : 'text-[#111827]'}`}>
                     {item.title}
                   </h3>
-                  <p className="text-xs text-[#64748B] leading-relaxed">
+                  <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}`}>
                     {item.desc}
                   </p>
                 </div>
@@ -265,20 +273,28 @@ export default function Landing({ isDarkMode = false }) {
 
           {/* Active Escrow Campaigns section inside/under loop container */}
           <div className="pt-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-4 ${
+              isDarkMode ? 'border-[#2B313A]' : 'border-slate-200'
+            }`}>
               <div>
-                <h3 className="text-xl font-bold text-[#111827] tracking-tight flex items-center space-x-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                <h3 className={`text-xl font-bold tracking-tight flex items-center space-x-2 ${
+                  isDarkMode ? 'text-[#EAECEF]' : 'text-[#111827]'
+                }`}>
+                  <span className={`w-2.5 h-2.5 rounded-full ${isDarkMode ? 'bg-[#F0B90B]' : 'bg-[#00D09C]'}`}></span>
                   <span>Active Escrow Campaigns</span>
                 </h3>
-                <p className="text-xs text-[#64748B] mt-0.5">
+                <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}`}>
                   Live testnet instances with automated hard-cap bounds
                 </p>
               </div>
 
               <button
                 onClick={() => setCurrentView('Explore')}
-                className="text-xs font-bold text-[#111827] hover:text-[#009379] flex items-center space-x-1.5 py-2 px-4 rounded-full border border-slate-300 bg-white hover:bg-slate-50 transition-colors shadow-2xs self-start sm:self-auto"
+                className={`text-xs font-bold flex items-center space-x-1.5 py-2 px-4 rounded-full border transition-colors shadow-2xs self-start sm:self-auto cursor-pointer ${
+                  isDarkMode
+                    ? 'border-[#2B313A] bg-[#1E2329] text-[#EAECEF] hover:text-[#F0B90B] hover:bg-[#262D36]'
+                    : 'border-slate-300 bg-white text-[#111827] hover:text-[#009379] hover:bg-slate-50'
+                }`}
               >
                 <span>View All Projects</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -290,43 +306,55 @@ export default function Landing({ isDarkMode = false }) {
               {campaigns.slice(0, 3).map((c) => (
                 <div
                   key={c.id}
-                  className="bg-white border border-[#DDD8CE] rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#10B981]/50 transition-all card-3d"
+                  className={`border rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-2xs transition-all card-3d ${
+                    isDarkMode 
+                      ? 'bg-[#1E2329] border-[#2B313A] text-[#EAECEF] hover:border-[#F0B90B]/50' 
+                      : 'bg-white border-[#E2E8F0] text-[#111827] hover:border-[#00D09C]/50'
+                  }`}
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#F0FDF4] text-[#009379] border border-emerald-200">
+                      <span className={`px-2.5 py-0.5 rounded-full border ${
+                        isDarkMode
+                          ? 'bg-[#181A20] text-[#B7BDC6] border-[#2B313A]'
+                          : 'bg-[#F0FDF4] text-[#009379] border-emerald-200'
+                      }`}>
                         {c.category}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-[#009379] text-[10px] font-medium flex items-center space-x-1">
-                        <span className="w-1 h-1 rounded-full bg-[#009379]"></span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center space-x-1 ${
+                        isDarkMode
+                          ? 'bg-[#0ECB81]/10 text-[#0ECB81]'
+                          : 'bg-emerald-50 text-[#009379]'
+                      }`}>
+                        <span className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-[#0ECB81]' : 'bg-[#009379]'}`}></span>
                         <span>Active</span>
                       </span>
                     </div>
 
-                    <h4 className="font-bold text-base text-black tracking-tight line-clamp-1">
+                    <h4 className={`font-bold text-base tracking-tight line-clamp-1 ${isDarkMode ? 'text-[#EAECEF]' : 'text-black'}`}>
                       {c.title}
                     </h4>
-                    <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed">
+                    <p className={`text-xs line-clamp-2 leading-relaxed ${isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}`}>
                       {c.summary}
                     </p>
                   </div>
 
                   {/* Progress Bar & Stats */}
-                  <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <div className={`space-y-2 pt-2 border-t ${isDarkMode ? 'border-[#2B313A]' : 'border-slate-100'}`}>
                     <div className="flex justify-between items-center text-xs font-mono">
-                      <span className="font-bold text-[#111827]">{c.totalRaised.toFixed(2)} ETH</span>
-                      <span className="text-[#64748B]">Cap: {c.hardCap.toFixed(2)} ETH</span>
+                      <span className={`font-bold ${isDarkMode ? 'text-[#EAECEF]' : 'text-[#111827]'}`}>{c.totalRaised.toFixed(2)} ETH</span>
+                      <span className={isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}>Cap: {c.hardCap.toFixed(2)} ETH</span>
                     </div>
 
-                    <div className="w-full h-2 bg-[#F2EFE9] rounded-full overflow-hidden">
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-[#2B313A]' : 'bg-[#F2EFE9]'}`}>
                       <div
-                        className="h-full bg-[#009379] rounded-full"
+                        className={`h-full rounded-full ${isDarkMode ? 'bg-[#F0B90B]' : 'bg-[#00D09C]'}`}
                         style={{ width: `${(c.totalRaised / c.hardCap) * 100}%` }}
                       ></div>
                     </div>
 
-                    <div className="flex justify-between text-[11px] font-mono text-[#64748B] pt-1">
-                      <span className="text-[#009379] font-bold">{c.mlScore}% Success Prob</span>
+                    <div className={`flex justify-between text-[11px] font-mono pt-1 ${isDarkMode ? 'text-[#848E9C]' : 'text-[#64748B]'}`}>
+                      <span className={isDarkMode ? 'text-[#F0B90B] font-bold' : 'text-[#009379] font-bold'}>{c.mlScore}% Success Prob</span>
                       <span>{(c.hardCap - c.totalRaised).toFixed(2)} ETH Rem</span>
                     </div>
                   </div>
@@ -336,7 +364,7 @@ export default function Landing({ isDarkMode = false }) {
                       setActiveCampaignId(c.id);
                       setCurrentView('Campaign');
                     }}
-                    className="w-full text-center py-2.5 rounded-full bg-[#111827] hover:bg-black text-white text-xs font-bold transition-colors"
+                    className="w-full text-center py-2.5 rounded-full btn-fintech-primary text-xs font-bold transition-colors cursor-pointer"
                   >
                     Inspect &amp; Contribute →
                   </button>

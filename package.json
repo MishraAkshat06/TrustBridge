@@ -1,0 +1,20 @@
+{
+  "name": "trustbridge",
+  "version": "2.0.0",
+  "description": "Groww-style Web3 FinTech crowdfunding & escrow platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/runner.js",
+    "test:e2e": "node tests/runner.js"
+  },
+  "keywords": [
+    "escrow",
+    "web3",
+    "crowdfunding",
+    "sepolia",
+    "nemotron"
+  ],
+  "author": "TrustBridge Team",
+  "license": "MIT"
+}

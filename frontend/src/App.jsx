@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Layers, 
@@ -14,14 +14,14 @@ import {
   Radio, 
   MapPin, 
   Lock, 
-  ExternalLink,
-  RotateCcw,
-  CheckCircle2,
-  Shield,
-  Clock,
-  ArrowRight,
-  Wallet,
-  Bot
+  ExternalLink, 
+  RotateCcw, 
+  CheckCircle2, 
+  Shield, 
+  Clock, 
+  ArrowRight, 
+  Wallet, 
+  Bot 
 } from 'lucide-react';
 import { useApp, AppProvider } from './context/AppContext';
 import Landing from './pages/Landing';
@@ -39,6 +39,7 @@ import CampaignDetails from './pages/CampaignDetails';
 function MainLayout() {
   const {
     account,
+    balance,
     connectWallet,
     user,
     logout,
@@ -55,11 +56,33 @@ function MainLayout() {
   const [contribAmount, setContribAmount] = useState('0.5');
   const [txStep, setTxStep] = useState(null); // 'confirming' | 'confirmed' | null
   const [txDetails, setTxDetails] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false); // Primary experience is light theme per spec
 
-  const minGoal = activeCampaign.goal || 10.0;
-  const hardCap = activeCampaign.hardCap || 20.0;
-  const totalRaised = activeCampaign.totalRaised || 0.0;
+  // Persist theme selection in localStorage ('trustbridge_theme')
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('trustbridge_theme');
+      if (saved) return saved === 'dark';
+    }
+    return false; // Default to Groww Light mode
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('trustbridge_theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('trustbridge_theme', 'light');
+      }
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
+
+  const minGoal = activeCampaign?.goal || 10.0;
+  const hardCap = activeCampaign?.hardCap || 20.0;
+  const totalRaised = activeCampaign?.totalRaised || 0.0;
   const remaining = Math.max(0, hardCap - totalRaised);
   const progressPercent = Math.min(100, Math.round((totalRaised / hardCap) * 100));
 
@@ -96,18 +119,10 @@ function MainLayout() {
   }
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans antialiased ${
-      currentView === 'Auth'
-        ? 'bg-[#F5F3EC] text-black'
-        : 'bg-[#0B0F17] text-zinc-100'
-    }`}>
+    <div className="min-h-screen flex flex-col font-sans antialiased bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-colors duration-200">
       {/* Modern Institutional Web3 Navbar */}
-      <header className={`h-16 border-b px-6 flex items-center justify-between sticky top-0 z-40 ${
-        currentView === 'Auth'
-          ? 'bg-white/80 backdrop-blur-md border-[#E7E5DF] text-black'
-          : 'border-zinc-800/80 bg-zinc-950/80 backdrop-blur-lg text-zinc-100'
-      }`}>
-        <div className="flex items-center space-x-8">
+      <header className="h-16 border-b px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 bg-[var(--header-bg)] border-[var(--border-subtle)] text-[var(--text-primary)] backdrop-blur-md">
+        <div className="flex items-center space-x-6 sm:space-x-8">
           <div 
             onClick={() => setCurrentView('Landing')}
             className="flex items-center space-x-3 cursor-pointer group"
@@ -120,38 +135,43 @@ function MainLayout() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-zinc-100 via-zinc-200 to-cyan-300 bg-clip-text text-transparent">
+                <span className="font-extrabold text-base tracking-tight text-[var(--text-primary)]">
                   TrustBridge
                 </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold">
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-[var(--accent-brand-subtle)] text-[var(--accent-brand-text)] dark:text-[var(--accent-brand)] border border-[var(--border-subtle)] font-semibold">
                   v2.0
                 </span>
               </div>
-              <div className="text-[10px] text-slate-400 -mt-0.5 font-medium">Decentralized Escrow Protocol</div>
+              <div className="text-[10px] text-[var(--text-secondary)] -mt-0.5 font-medium">Decentralized Escrow Protocol</div>
             </div>
           </div>
 
           {/* Network Indicator Badge */}
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-mono bg-zinc-900/80 border border-zinc-800 text-zinc-300">
+          <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-mono bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] text-[var(--text-secondary)]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
-            <span className="text-zinc-200 font-semibold">Sepolia Testnet</span>
+            <span className="text-[var(--text-primary)] font-semibold">Sepolia Testnet</span>
           </div>
         </div>
 
-        {/* Center Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-6 text-xs font-semibold text-slate-400">
+        {/* Center Navigation Links (Core Views) */}
+        <nav className="hidden xl:flex items-center space-x-5 text-xs font-semibold">
           {[
             { id: 'Landing', label: 'Protocol' },
             { id: 'Explore', label: 'Explore' },
             { id: 'Campaign', label: 'Vault Hub' },
+            { id: 'Contributions', label: 'Portfolio' },
+            { id: 'Verifier', label: 'Verifier' },
+            { id: 'Wallet', label: 'Wallet' },
             { id: 'Create', label: 'Create' },
             { id: 'Docs', label: 'Docs' }
           ].map((item) => (
             <button
               key={item.id}
               onClick={() => setCurrentView(item.id)}
-              className={`hover:text-cyan-400 transition-colors ${
-                currentView === item.id ? 'text-cyan-400 font-bold' : ''
+              className={`transition-colors py-1 cursor-pointer ${
+                currentView === item.id 
+                  ? 'text-[var(--accent-brand-text)] dark:text-[var(--accent-brand)] font-bold border-b-2 border-[var(--accent-brand)]' 
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               {item.label}
@@ -159,16 +179,39 @@ function MainLayout() {
           ))}
         </nav>
 
-        {/* Right Controls: Balance + Truncated Address */}
-        <div className="flex items-center space-x-3">
+        {/* Right Controls: Theme Toggle + Auth + Wallet */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3">
+          {/* Seamless Theme Toggle Button (Groww Light / Binance Dark) */}
+          <button
+            onClick={toggleTheme}
+            title={isDarkMode ? "Switch to Groww FinTech Light" : "Switch to Binance Pro Dark"}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border shadow-2xs ${
+              isDarkMode
+                ? 'border-[#2B313A] bg-[#181A20] text-[#F0B90B] hover:bg-[#1E2329]'
+                : 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+            }`}
+          >
+            {isDarkMode ? (
+              <>
+                <Moon className="w-3.5 h-3.5 text-[#F0B90B]" />
+                <span className="font-mono">Binance Dark</span>
+              </>
+            ) : (
+              <>
+                <Sun className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="font-mono">Groww Light</span>
+              </>
+            )}
+          </button>
+
           {user ? (
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-medium text-zinc-300 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
+              <span className="text-xs font-mono font-medium text-[var(--text-primary)] px-3 py-1 bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] rounded-full hidden sm:inline-block">
                 {user.name.slice(0, 10)}
               </span>
               <button
                 onClick={logout}
-                className="text-[11px] text-slate-400 hover:text-rose-400 font-medium"
+                className="text-[11px] text-[var(--text-muted)] hover:text-rose-500 font-medium cursor-pointer"
               >
                 Logout
               </button>
@@ -176,7 +219,7 @@ function MainLayout() {
           ) : (
             <button
               onClick={() => setCurrentView('Auth')}
-              className="px-3.5 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition"
+              className="px-3 py-1.5 rounded-full bg-[var(--bg-surface-subtle)] hover:bg-[var(--border-subtle)] text-[var(--text-primary)] border border-[var(--border-subtle)] text-xs font-semibold transition cursor-pointer"
             >
               Sign In
             </button>
@@ -185,17 +228,45 @@ function MainLayout() {
           {/* Wallet Button with Balance Chip */}
           <button 
             onClick={connectWallet}
-            className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-mono border border-zinc-800 bg-zinc-900/90 hover:border-zinc-700 text-zinc-200 shadow-sm transition"
+            className="flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-subtle)] text-[var(--text-primary)] shadow-2xs transition cursor-pointer"
           >
             <span className="text-xs">🦊</span>
-            <span className="font-semibold text-cyan-400">
+            <span className="font-semibold text-[var(--accent-brand-text)] dark:text-[var(--accent-brand)]">
               {balance ? `${parseFloat(balance).toFixed(2)} ETH` : '0.00 ETH'}
             </span>
-            <span className="text-zinc-600">|</span>
-            <span>{account ? `${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect'}</span>
+            <span className="text-[var(--text-muted)] hidden sm:inline">|</span>
+            <span className="hidden sm:inline">{account ? `${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect'}</span>
           </button>
         </div>
       </header>
+
+      {/* Mobile / Tablet Horizontal Navigation Strip */}
+      <div className="xl:hidden border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 flex items-center gap-2 overflow-x-auto text-xs whitespace-nowrap">
+        {[
+          { id: 'Landing', label: 'Protocol' },
+          { id: 'Explore', label: 'Explore' },
+          { id: 'Campaign', label: 'Vault Hub' },
+          { id: 'Contributions', label: 'Portfolio' },
+          { id: 'Verifier', label: 'Verifier' },
+          { id: 'Wallet', label: 'Wallet' },
+          { id: 'Create', label: 'Create' },
+          { id: 'AiRisk', label: 'AI Risk' },
+          { id: 'Ledger', label: 'Ledger' },
+          { id: 'Docs', label: 'Docs' }
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setCurrentView(item.id)}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
+              currentView === item.id
+                ? 'bg-[var(--accent-brand-subtle)] text-[var(--accent-brand-text)] dark:text-[var(--accent-brand)] font-bold'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface-subtle)]'
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
 
       {/* Main Container */}
       {currentView === 'Landing' ? (
@@ -209,15 +280,16 @@ function MainLayout() {
       ) : (
         <div className="flex-1 flex max-w-[1600px] w-full mx-auto">
           {/* Institutional Web3 Left Sidebar */}
-          <aside className="w-64 border-r border-zinc-800/70 bg-zinc-950/60 backdrop-blur-xl p-4 flex flex-col justify-between hidden lg:flex">
+          <aside className="w-64 border-r border-[var(--border-subtle)] bg-[var(--sidebar-bg)] p-4 flex flex-col justify-between hidden lg:flex">
             <div className="space-y-1">
               {[
+                { id: 'Landing', name: 'Protocol Overview', icon: Radio },
                 { id: 'Campaign', name: 'Escrow Vault Hub', icon: LayoutDashboard },
                 { id: 'Explore', name: 'Explore Campaigns', icon: Layers },
-                { id: 'Create', name: 'Create Campaign', icon: PlusCircle },
                 { id: 'Contributions', name: 'My Contributions', icon: HeartHandshake },
                 { id: 'Verifier', name: 'Verifier Chamber', icon: ShieldCheck },
                 { id: 'Wallet', name: 'Wallet & Network', icon: Wallet },
+                { id: 'Create', name: 'Create Campaign', icon: PlusCircle },
                 { id: 'AiRisk', name: 'AI Risk Audit', icon: Bot },
                 { id: 'Ledger', name: 'Transaction Ledger', icon: Layers },
                 { id: 'Docs', name: 'Documentation', icon: FileText },
@@ -227,14 +299,14 @@ function MainLayout() {
                   <button
                     key={item.name}
                     onClick={() => setCurrentView(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium tracking-tight transition-all ${
+                    className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-medium tracking-tight transition-all cursor-pointer ${
                       active
-                        ? 'bg-gradient-to-r from-indigo-500/15 to-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-                        : 'text-slate-400 hover:bg-zinc-900/60 hover:text-zinc-100'
+                        ? 'bg-[var(--accent-brand-subtle)] text-[var(--accent-brand-text)] dark:text-[var(--accent-brand)] border-l-2 border-[var(--accent-brand)] font-semibold shadow-2xs'
+                        : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface-subtle)] hover:text-[var(--text-primary)]'
                     }`}
                   >
                     <item.icon className={`w-4 h-4 ${
-                      active ? 'text-cyan-400' : 'text-slate-500'
+                      active ? 'text-[var(--accent-brand)]' : 'text-[var(--text-muted)]'
                     }`} />
                     <span>{item.name}</span>
                   </button>
@@ -243,17 +315,17 @@ function MainLayout() {
             </div>
 
             {/* Bottom Escrow Security Badge */}
-            <div className="p-4 rounded-xl text-xs space-y-2 bg-zinc-900/70 border border-zinc-800/80">
-              <div className="font-bold text-xs text-zinc-200 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="p-4 rounded-xl text-xs space-y-2 bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)]">
+              <div className="font-bold text-xs text-[var(--text-primary)] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 <span>Non-Custodial Escrow</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
+              <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed font-normal">
                 Strict 20 ETH ceiling. Funds released only on verifier signature.
               </p>
               <button
                 onClick={() => setCurrentView('Explore')}
-                className="w-full py-2 btn-fintech-primary text-xs font-semibold"
+                className="w-full py-2 btn-fintech-primary text-xs font-semibold cursor-pointer"
               >
                 Explore Vaults
               </button>
@@ -266,19 +338,19 @@ function MainLayout() {
             {txStep && (
               <div className={`p-3.5 rounded-xl text-xs font-mono border flex items-center justify-between ${
                 txStep === 'confirming'
-                  ? 'bg-amber-50 border-amber-200 text-amber-900'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400'
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
               }`}>
                 <div className="flex items-center space-x-2">
                   {txStep === 'confirming' ? (
-                    <Clock className="w-4 h-4 animate-spin text-amber-600" />
+                    <Clock className="w-4 h-4 animate-spin text-amber-600 dark:text-amber-400" />
                   ) : (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   )}
                   <span>{txDetails}</span>
                 </div>
                 {txStep === 'confirmed' && (
-                  <span className="text-[11px] font-bold text-emerald-700">✓ On-Chain Verified</span>
+                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">✓ On-Chain Verified</span>
                 )}
               </div>
             )}
@@ -298,19 +370,24 @@ function MainLayout() {
       )}
 
       {/* Footer */}
-      <footer className={`border-t py-4 px-6 flex items-center justify-between text-xs ${
-        isDarkMode ? 'border-[#1C2538] text-slate-500 bg-[#0B0E14]' : 'border-[#E7E5DF] text-[#64748B] bg-white'
-      }`}>
-        <div className="flex items-center space-x-2 font-bold text-[#111827] dark:text-white">
-          <span>◈ TrustBridge</span>
+      <footer className="border-t py-4 px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs border-[var(--border-subtle)] text-[var(--text-secondary)] bg-[var(--bg-surface)]">
+        <div className="flex items-center space-x-2 font-bold text-[var(--text-primary)]">
+          <span className="text-[var(--accent-brand)]">◈</span>
+          <span>TrustBridge Protocol</span>
         </div>
-        <div className="flex space-x-6 font-medium">
-          <button onClick={() => setCurrentView('Landing')} className="hover:text-[#B88A20]">Protocol</button>
-          <button onClick={() => setCurrentView('Explore')} className="hover:text-[#B88A20]">Explore</button>
-          <button onClick={() => setCurrentView('Create')} className="hover:text-[#B88A20]">Create</button>
-          <button onClick={() => setCurrentView('Docs')} className="hover:text-[#B88A20]">Docs</button>
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-medium text-xs">
+          <button onClick={() => setCurrentView('Landing')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Protocol</button>
+          <button onClick={() => setCurrentView('Explore')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Explore</button>
+          <button onClick={() => setCurrentView('Campaign')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Vault Hub</button>
+          <button onClick={() => setCurrentView('Contributions')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Portfolio</button>
+          <button onClick={() => setCurrentView('Verifier')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Verifier</button>
+          <button onClick={() => setCurrentView('Wallet')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Wallet</button>
+          <button onClick={() => setCurrentView('Create')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Create</button>
+          <button onClick={() => setCurrentView('AiRisk')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">AI Risk</button>
+          <button onClick={() => setCurrentView('Ledger')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Ledger</button>
+          <button onClick={() => setCurrentView('Docs')} className="hover:text-[var(--accent-brand)] transition cursor-pointer">Docs</button>
         </div>
-        <div className="font-mono text-[11px]">Build • Verify • Fund a Better Tomorrow.</div>
+        <div className="font-mono text-[11px] text-[var(--text-muted)]">Build • Verify • Fund a Better Tomorrow.</div>
       </footer>
     </div>
   );
