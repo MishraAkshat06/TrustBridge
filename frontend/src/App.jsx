@@ -291,7 +291,7 @@ function MainLayout() {
             {currentView === 'Campaign' && (
               <>
                 {/* Compact Reduced-Height Campaign Header (20-25% shorter) */}
-                <div className={`border rounded-xl p-5 shadow-xs ${
+                <div className={`border rounded-2xl p-5 shadow-xs card-3d ${
                   isDarkMode ? 'border-[#1C2538] bg-[#0B0E14]' : 'border-[#E7E5DF] bg-white'
                 }`}>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -305,7 +305,7 @@ function MainLayout() {
                           <span>Active</span>
                         </span>
                       </div>
-                      <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#111827] dark:text-white">
+                      <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black dark:text-white">
                         {activeCampaign.title}
                       </h1>
                       <p className="text-xs text-[#64748B] max-w-2xl leading-relaxed">
@@ -352,14 +352,14 @@ function MainLayout() {
                   {/* Left Main Column: Funding Progress (Strongest Visual Hierarchy) + About */}
                   <div className="lg:col-span-7 space-y-6">
                     {/* Funding Progress (Focal Point) */}
-                    <div className={`border rounded-xl p-6 shadow-xs space-y-4 ${
+                    <div className={`border rounded-2xl p-6 shadow-xs space-y-4 card-3d ${
                       isDarkMode ? 'border-[#1C2538] bg-[#0B0E14]' : 'border-[#E7E5DF] bg-white'
                     }`}>
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Funding Progress</span>
+                          <span className="text-xs font-extrabold uppercase tracking-wider text-black dark:text-white">Funding Progress</span>
                           <div className="flex items-baseline space-x-2 mt-1">
-                            <span className="text-3xl font-extrabold font-mono text-[#111827] dark:text-white">{totalRaised.toFixed(2)}</span>
+                            <span className="text-3xl font-extrabold font-mono text-black dark:text-white">{totalRaised.toFixed(2)}</span>
                             <span className="text-[#64748B] font-mono font-semibold">/ {hardCap.toFixed(2)} ETH</span>
                           </div>
                         </div>
@@ -558,11 +558,11 @@ function MainLayout() {
                 {/* Bottom Row: Milestone Timeline + Smart Contract + Activity */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                   {/* Milestone Vertical Timeline (Released, Current, Locked, Locked) */}
-                  <div className={`border rounded-xl p-5 shadow-xs space-y-4 ${
+                  <div className={`border rounded-2xl p-5 shadow-xs space-y-4 card-3d ${
                     isDarkMode ? 'border-[#1C2538] bg-[#0B0E14]' : 'border-[#E7E5DF] bg-white'
                   }`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#111827] dark:text-white">Milestones</h3>
+                      <h3 className="text-xs font-extrabold uppercase tracking-wider text-black dark:text-white">Milestones</h3>
                       <span className="text-xs font-mono text-[#64748B]">2 / 4 Active</span>
                     </div>
 
@@ -584,7 +584,7 @@ function MainLayout() {
                             {m.state === 'done' ? '✓' : '•'}
                           </div>
                           <div className="flex-1">
-                            <div className="font-semibold text-[#111827] dark:text-white">{m.title}</div>
+                            <div className="font-semibold text-black dark:text-white">{m.title}</div>
                             <div className="text-[11px] text-[#64748B]">{m.sub}</div>
                           </div>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
@@ -602,11 +602,11 @@ function MainLayout() {
                   </div>
 
                   {/* Smart Contract Card */}
-                  <div className={`border rounded-xl p-5 shadow-xs space-y-3.5 ${
+                  <div className={`border rounded-2xl p-5 shadow-xs space-y-3.5 card-3d ${
                     isDarkMode ? 'border-[#1C2538] bg-[#0B0E14]' : 'border-[#E7E5DF] bg-white'
                   }`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#111827] dark:text-white">Smart Contract</h3>
+                      <h3 className="text-xs font-extrabold uppercase tracking-wider text-black dark:text-white">Smart Contract</h3>
                       <ExternalLink className="w-4 h-4 text-[#64748B]" />
                     </div>
 

@@ -3,7 +3,7 @@
 :root {
   --bg-page: #F7F6F2;
   --bg-card: #FFFFFF;
-  --text-primary: #111827;
+  --text-primary: #0F172A;
   --text-secondary: #64748B;
   --color-gold: #B88A20;
   --color-green: #15966D;
@@ -18,18 +18,117 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  perspective: 1200px;
 }
 
-/* Global button enhancement: pill curves + hover feedback */
-button {
+/* Ensure all big headings are crisp solid black by default */
+h1, h2, h3, .heading-black {
+  color: #000000 !important;
+  font-weight: 800;
+}
+
+/* ========================================================================= */
+/* 3D Global Perspective & Depth Classes */
+/* ========================================================================= */
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.2s ease;
+  box-shadow: 
+    0 12px 28px -8px rgba(0, 0, 0, 0.08),
+    0 4px 10px -2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.card-3d:hover {
+  transform: translateY(-6px) translateZ(12px) rotateX(1.5deg) rotateY(-1deg);
+  box-shadow: 
+    0 24px 45px -12px rgba(0, 0, 0, 0.14),
+    0 8px 18px -4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.03);
+}
+
+/* 3D Floating Badges */
+.badge-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 
+    0 8px 20px -4px rgba(0, 0, 0, 0.06),
+    0 2px 6px -1px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.badge-3d:hover {
+  transform: translateY(-3px) translateZ(8px);
+  box-shadow: 
+    0 14px 28px -6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* 3D Interactive Buttons */
+button, .btn-3d {
   border-radius: 9999px;
+  transform-style: preserve-3d;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
 }
 
-button:hover {
-  transform: translateY(-1px);
+button:hover, .btn-3d:hover {
+  transform: translateY(-2px) translateZ(4px);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18);
 }
 
-button:active {
-  transform: translateY(0px);
+button:active, .btn-3d:active {
+  transform: translateY(1px) translateZ(-2px);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 3D Floating Keyframe Animations */
+@keyframes float3D {
+  0% {
+    transform: translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-12px) translateZ(24px) rotateX(3deg) rotateY(-2deg);
+  }
+  100% {
+    transform: translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg);
+  }
+}
+
+.animate-float3d {
+  animation: float3D 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes pulseGlow3D {
+  0%, 100% {
+    filter: drop-shadow(0 20px 25px rgba(21, 150, 109, 0.35)) drop-shadow(0 0 15px rgba(234, 179, 8, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 30px 40px rgba(21, 150, 109, 0.55)) drop-shadow(0 0 25px rgba(234, 179, 8, 0.4));
+  }
+}
+
+.animate-glow3d {
+  animation: pulseGlow3D 4s ease-in-out infinite;
+}
+
+/* 3D Bevel Pedestal */
+.pedestal-3d {
+  transform-style: preserve-3d;
+  box-shadow: 
+    0 20px 40px -10px rgba(21, 150, 109, 0.25),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -3px 4px rgba(0, 0, 0, 0.12);
 }

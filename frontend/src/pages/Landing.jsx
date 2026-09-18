@@ -53,13 +53,13 @@ export default function Landing({ isDarkMode = false }) {
                 <span>AI-Assisted • Blockchain-Enforced • Milestone Crowdfunding</span>
               </div>
 
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.12]">
-                Risk-Aware Crowdfunding Backed by{' '}
-                <span className="text-[#10B981]">
+              {/* Headline in Big Bold Black */}
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.12] text-black">
+                Transparent Crowdfunding Backed by{' '}
+                <span className="text-[#15966D]">
                   AI Auditing &amp;
                 </span>{' '}
-                <span className="text-[#10B981]">
+                <span className="text-[#15966D]">
                   Programmable Escrow
                 </span>
               </h1>
@@ -125,11 +125,11 @@ export default function Landing({ isDarkMode = false }) {
             </div>
 
             {/* Right Hero Visual: 3D Crystal & Floating Card */}
-            <div className="lg:col-span-5 relative flex items-center justify-center">
+            <div className="lg:col-span-5 relative flex items-center justify-center perspective-[1000px]">
               {/* Central Glowing 3D Ethereum Prism */}
-              <div className="relative w-full max-w-md aspect-square flex flex-col items-center justify-center">
+              <div className="relative w-full max-w-md aspect-square flex flex-col items-center justify-center animate-float3d">
                 {/* 3D Gold Prism Facet */}
-                <div className="w-56 h-64 relative flex items-center justify-center filter drop-shadow-[0_25px_35px_rgba(234,179,8,0.4)] transform hover:scale-105 transition-transform duration-500">
+                <div className="w-56 h-64 relative flex items-center justify-center animate-glow3d transform hover:scale-105 transition-transform duration-500">
                   <svg viewBox="0 0 100 120" className="w-full h-full">
                     <polygon points="50,5 15,55 50,75 85,55" fill="url(#prismTop)" />
                     <polygon points="50,75 15,55 50,115" fill="url(#prismLeft)" />
@@ -154,15 +154,15 @@ export default function Landing({ isDarkMode = false }) {
                 </div>
 
                 {/* Floating Glassmorphic Card (Ideas Verified On-chain) matching image */}
-                <div className={`absolute top-2 right-2 backdrop-blur-xl border rounded-2xl p-5 shadow-2xl max-w-[210px] space-y-2 ${
+                <div className={`absolute top-2 right-2 backdrop-blur-xl border rounded-2xl p-5 shadow-2xl max-w-[210px] space-y-2 card-3d ${
                   isDarkMode 
                     ? 'bg-[#101622]/85 border-[#28354E] text-white' 
-                    : 'bg-white/95 border-[#EAE3D6] text-[#111827]'
+                    : 'bg-white/95 border-[#EAE3D6] text-black'
                 }`}>
-                  <div className="text-sm font-extrabold leading-snug">
+                  <div className="text-sm font-extrabold leading-snug text-black dark:text-white">
                     Ideas Verified On-chain
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-normal">
+                  <p className="text-[11px] text-slate-500 leading-normal">
                     Transparent Crowdfunding for a Trusted Tomorrow.
                   </p>
                   <div className="pt-2 flex justify-end">
@@ -242,7 +242,7 @@ export default function Landing({ isDarkMode = false }) {
             ].map((item) => (
               <div
                 key={item.step}
-                className="bg-white border border-[#DDD8CE] rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm"
+                className="bg-white border border-[#DDD8CE] rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-sm card-3d"
               >
                 <div className="flex items-center justify-between">
                   <span className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${item.badgeColor}`}>
@@ -252,7 +252,7 @@ export default function Landing({ isDarkMode = false }) {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-[#111827] tracking-tight">
+                  <h3 className="text-base font-bold text-black tracking-tight">
                     {item.title}
                   </h3>
                   <p className="text-xs text-[#64748B] leading-relaxed">
@@ -290,7 +290,7 @@ export default function Landing({ isDarkMode = false }) {
               {campaigns.slice(0, 3).map((c) => (
                 <div
                   key={c.id}
-                  className="bg-white border border-[#DDD8CE] rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#10B981]/50 transition-all"
+                  className="bg-white border border-[#DDD8CE] rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#10B981]/50 transition-all card-3d"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-[11px] font-mono">
@@ -303,7 +303,7 @@ export default function Landing({ isDarkMode = false }) {
                       </span>
                     </div>
 
-                    <h4 className="font-bold text-base text-[#111827] tracking-tight line-clamp-1">
+                    <h4 className="font-bold text-base text-black tracking-tight line-clamp-1">
                       {c.title}
                     </h4>
                     <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed">
