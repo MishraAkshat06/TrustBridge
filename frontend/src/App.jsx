@@ -96,15 +96,19 @@ function MainLayout() {
 
   return (
     <div className={`min-h-screen flex flex-col font-sans antialiased ${
-      isDarkMode 
-        ? 'bg-[#080A0F] text-slate-100' 
-        : 'bg-[#F7F6F2] text-[#111827]'
+      currentView === 'Auth'
+        ? 'bg-[#F5F3EC] text-black'
+        : isDarkMode 
+          ? 'bg-[#080A0F] text-slate-100' 
+          : 'bg-[#F7F6F2] text-[#111827]'
     }`}>
       {/* Top Navbar */}
       <header className={`h-16 border-b px-6 flex items-center justify-between sticky top-0 z-30 ${
-        isDarkMode 
-          ? 'bg-[#0B0E14] border-[#1C2538]' 
-          : 'bg-white border-[#E7E5DF]'
+        currentView === 'Auth'
+          ? 'bg-white/80 backdrop-blur-md border-[#E7E5DF] text-black'
+          : isDarkMode 
+            ? 'bg-[#0B0E14] border-[#1C2538]' 
+            : 'bg-white border-[#E7E5DF]'
       }`}>
         <div className="flex items-center space-x-8">
           <div 
