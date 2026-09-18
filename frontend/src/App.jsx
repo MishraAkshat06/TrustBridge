@@ -190,8 +190,8 @@ function MainLayout() {
           <Landing isDarkMode={isDarkMode} />
         </main>
       ) : currentView === 'Auth' ? (
-        <main className="flex-1 p-6">
-          <Auth />
+        <main className="flex-1">
+          <Auth isDarkMode={isDarkMode} />
         </main>
       ) : (
         <div className="flex-1 flex max-w-[1600px] w-full mx-auto">
