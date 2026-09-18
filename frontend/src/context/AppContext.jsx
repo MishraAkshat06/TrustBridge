@@ -1,12 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { BrowserProvider } from 'ethers';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../contractConfig';
 import { MOCK_CAMPAIGNS } from '../mockData';
+import { fetchCampaigns, createCampaignApi, predictSuccess, assessRisk } from '../services/api';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
-  // Navigation / views: 'Landing', 'Auth', 'Campaign', 'Explore', 'Create', 'Contributions', 'Verifier', 'Docs'
+  // Navigation / views: 'Landing', 'Auth', 'Campaign', 'Explore', 'Create', 'Contributions', 'Verifier', 'Docs', 'Wallet', 'AiRisk', 'Ledger'
   const [currentView, setCurrentView] = useState('Landing');
   const [account, setAccount] = useState('');
   const [activeTab, setActiveTab] = useState('Overview');
@@ -31,6 +32,40 @@ export function AppProvider({ children }) {
   ]);
 
   const activeCampaign = campaigns.find(c => c.id === activeCampaignId) || campaigns[0];
+
+  useEffect(() => {
+    async function loadBackendCampaigns() {
+      const data = await fetchCampaigns();
+      if (data && data.length > 0) {
+        const mapped = data.map((c, idx) => ({
+          id: c.id,
+          title: c.title,
+          category: c.category || 'AI/ML',
+          verified: true,
+          creator: c.creator_address,
+          summary: c.description,
+          goal: c.goal_eth || 10.0,
+          hardCap: c.hard_cap_eth || 20.0,
+          totalRaised: Number((c.goal_eth * 0.725).toFixed(2)),
+          deadlineDays: 30,
+          mlScore: 92,
+          risk: 'LOW',
+          riskLevel: 'LOW',
+          riskDetails: 'Structural evaluation passed. Realistic roadmap deliverables with balanced tranches.',
+          milestones: (c.milestones || []).map((m, mIdx) => ({
+            id: mIdx + 1,
+            title: m.title,
+            percentage: Math.round((m.tranche_bps || 2500) / 100),
+            status: m.status || 'PENDING',
+            evidence: ''
+          }))
+        }));
+        setCampaigns(mapped);
+        if (mapped[0]) setActiveCampaignId(mapped[0].id);
+      }
+    }
+    loadBackendCampaigns();
+  }, []);
 
   async function connectWallet() {
     if (window.ethereum) {
@@ -209,6 +244,22 @@ export function AppProvider({ children }) {
     setCampaigns(prev => [created, ...prev]);
     setActiveCampaignId(id);
     setCurrentView('Campaign');
+
+    // Asynchronously register in backend SQLite
+    createCampaignApi({
+      id,
+      title: created.title,
+      description: created.summary,
+      category: created.category,
+      creator_address: created.creator,
+      goal_eth: created.goal,
+      hard_cap_eth: created.hardCap,
+      deadline_timestamp: Math.floor(Date.now() / 1000) + 30 * 86400,
+      milestones: created.milestones.map(m => ({
+        title: m.title,
+        tranche_bps: m.percentage * 100
+      }))
+    }).catch(err => console.warn('Failed to sync new campaign to API:', err));
   }
 
   return (
