@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Shield, BarChart2, Users, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { 
+  ArrowRight, 
+  Lock, 
+  Mail, 
+  ShieldCheck, 
+  BarChart2, 
+  Users, 
+  Eye, 
+  EyeOff, 
+  Shield
+} from 'lucide-react';
 
 export default function Auth({ isDarkMode = false }) {
   const { loginOrRegister, connectWallet, account, setCurrentView } = useApp();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [role, setRole] = useState('Contributor');
 
   function handleSubmit(e) {
     e.preventDefault();
     loginOrRegister({
       name: name || (isLogin ? 'Verified Backer' : 'Akshar Vikram'),
-      email: email || 'user@trustbridge.io',
-      role: 'Contributor',
+      email: email || 'user@institution.edu',
+      role,
       kycStatus: 'Verified (Off-Chain Sandbox)'
     });
     setCurrentView('Campaign');
@@ -35,233 +46,248 @@ export default function Auth({ isDarkMode = false }) {
   function handleMetaMaskAuth() {
     connectWallet();
     loginOrRegister({
-      name: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : 'MetaMask User',
-      email: 'wallet@sepolia.eth',
+      name: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0x7B2a...4Fa1',
+      email: 'web3@sepolia.eth',
       role: 'Contributor',
-      kycStatus: 'Web3 Wallet Verified'
+      kycStatus: 'MetaMask Verified'
     });
     setCurrentView('Campaign');
   }
 
   return (
-    <div className={`min-h-[calc(100vh-4rem)] w-full flex items-center justify-center px-4 lg:px-12 py-8 relative overflow-hidden transition-colors ${
-      isDarkMode ? 'bg-[#090C12] text-slate-100' : 'bg-[#F6F5F0] text-[#111827]'
-    }`}>
-      {/* Ambient background glows */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none"></div>
-      <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-emerald-500/15 blur-[140px] pointer-events-none"></div>
-      <div className="absolute -bottom-20 left-1/3 w-80 h-80 rounded-full bg-amber-500/10 blur-[100px] pointer-events-none"></div>
+    <div className="relative min-h-[calc(100vh-4rem)] w-full overflow-hidden bg-gradient-to-br from-[#FAF9F5] via-[#F3F0E8] to-[#E8E4D9] dark:from-[#080B11] dark:via-[#0E131E] dark:to-[#080A0F] text-[#0F172A] dark:text-slate-100 flex items-center justify-center px-4 sm:px-6 lg:px-12 py-10 transition-colors duration-300">
+      
+      {/* Ambient background soft light rays and glowing refraction */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl"></div>
+        <div className="absolute top-1/3 -right-24 w-[500px] h-[500px] rounded-full bg-amber-400/10 blur-3xl"></div>
+        <div className="absolute -bottom-20 left-1/3 w-[600px] h-[400px] rounded-full bg-emerald-600/5 blur-3xl"></div>
+        {/* Subtle geometric grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+      </div>
 
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+      {/* Main 3-Column Layout */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         
-        {/* Left Column: Brand Hero Text & Badges */}
+        {/* ========================================================================= */}
+        {/* LEFT COLUMN: Hero Pitch & Bold Black Headings */}
+        {/* ========================================================================= */}
         <div className="lg:col-span-4 space-y-6 text-left">
-          <div className="text-[11px] font-mono tracking-[0.25em] text-[#64748B] dark:text-slate-400 uppercase font-semibold">
+          {/* Micro Tag */}
+          <div className="text-[11px] font-bold tracking-[0.25em] text-slate-500 uppercase">
             TRUSTBRIDGE
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] text-[#111827] dark:text-white">
+          {/* Big Bold Headings in BLACK with Emerald Green Accent */}
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-black dark:text-white leading-[1.12]">
             Transparent<br />
             Crowdfunding<br />
-            <span className="text-[#0F946F]">for a Better</span><br />
-            <span className="text-[#0F946F]">Tomorrow.</span>
+            <span className="text-[#15966D]">
+              for a Better<br />
+              Tomorrow.
+            </span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-slate-400 max-w-sm leading-relaxed">
+          {/* Subtitle Paragraph */}
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed font-normal">
             Back real ideas with on-chain transparency, AI-powered auditing, and milestone-based escrow on Ethereum Sepolia.
           </p>
 
-          {/* 3 Pills: Secure Escrow, AI Auditing, Real Impact */}
-          <div className="flex items-center space-x-3 pt-2">
-            <div className="flex items-center space-x-2 bg-white/80 dark:bg-[#131926]/80 backdrop-blur-md px-3 py-2 rounded-xl border border-[#E5E2DC] dark:border-[#232F46] shadow-2xs">
-              <div className="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#0F946F] flex items-center justify-center">
-                <Shield className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[11px] font-semibold text-[#111827] dark:text-slate-200">Secure<br />Escrow</span>
+          {/* 3 Feature Pills */}
+          <div className="flex flex-wrap items-center gap-2.5 pt-2">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <Shield className="w-4 h-4 text-[#15966D]" />
+              <span>Secure Escrow</span>
             </div>
 
-            <div className="flex items-center space-x-2 bg-white/80 dark:bg-[#131926]/80 backdrop-blur-md px-3 py-2 rounded-xl border border-[#E5E2DC] dark:border-[#232F46] shadow-2xs">
-              <div className="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#0F946F] flex items-center justify-center">
-                <BarChart2 className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[11px] font-semibold text-[#111827] dark:text-slate-200">AI<br />Auditing</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <BarChart2 className="w-4 h-4 text-[#15966D]" />
+              <span>AI Auditing</span>
             </div>
 
-            <div className="flex items-center space-x-2 bg-white/80 dark:bg-[#131926]/80 backdrop-blur-md px-3 py-2 rounded-xl border border-[#E5E2DC] dark:border-[#232F46] shadow-2xs">
-              <div className="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#0F946F] flex items-center justify-center">
-                <Users className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[11px] font-semibold text-[#111827] dark:text-slate-200">Real<br />Impact</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-xs font-semibold text-slate-800 dark:text-slate-200">
+              <Users className="w-4 h-4 text-[#15966D]" />
+              <span>Real Impact</span>
             </div>
           </div>
 
-          {/* Bottom Slogan Footer */}
-          <div className="pt-6 flex items-center space-x-2 text-[10px] font-mono tracking-widest text-[#64748B] dark:text-slate-500 uppercase">
-            <span className="w-5 h-0.5 bg-[#0F946F]"></span>
-            <span>IDEAS → MILESTONES → IMPACT</span>
+          {/* Bottom Milestone Loop */}
+          <div className="pt-6 border-t border-slate-300/50 dark:border-slate-800 flex items-center gap-3 text-[11px] font-mono tracking-widest text-slate-500 uppercase">
+            <span className="w-4 h-0.5 bg-[#15966D]"></span>
+            <span>IDEAS &nbsp;→&nbsp; MILESTONES &nbsp;→&nbsp; IMPACT</span>
           </div>
         </div>
 
-        {/* Center Column: Frosted Glass Login Card */}
-        <div className="lg:col-span-4 flex justify-center">
-          <div className="w-full max-w-[400px] bg-white/75 dark:bg-[#101624]/80 backdrop-blur-2xl border border-white/90 dark:border-white/10 rounded-[32px] p-7 shadow-[0_20px_50px_rgba(0,0,0,0.06)] space-y-4 relative">
+        {/* ========================================================================= */}
+        {/* CENTER COLUMN: Floating Glassmorphism Login Card */}
+        {/* ========================================================================= */}
+        <div className="lg:col-span-5 flex justify-center">
+          <div className="w-full max-w-[420px] bg-white/85 dark:bg-[#0E131E]/90 backdrop-blur-2xl border border-white/90 dark:border-slate-700/60 rounded-[32px] p-7 sm:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.08)] relative">
             
-            {/* Logo Mark */}
-            <div className="w-11 h-11 rounded-2xl bg-[#1A1C20] text-[#D4AF37] border border-[#2D313A] flex items-center justify-center font-bold text-xl mx-auto shadow-sm">
-              ⬡
+            {/* Top Brand Hex Cube */}
+            <div className="w-12 h-12 rounded-2xl bg-[#111827] border border-slate-800 flex items-center justify-center mx-auto mb-3.5 shadow-md">
+              <span className="text-xl text-[#D4AF37] font-bold">⬡</span>
             </div>
 
-            {/* Heading */}
-            <div className="text-center space-y-1">
-              <h2 className="text-xl font-extrabold tracking-tight text-[#111827] dark:text-white">
-                {isLogin ? 'Welcome to TrustBridge' : 'Create an Account'}
+            {/* Title & Subtitle */}
+            <div className="text-center space-y-1 mb-5">
+              <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">
+                {isLogin ? 'Welcome to TrustBridge' : 'Create TrustBridge Account'}
               </h2>
-              <p className="text-[11px] text-[#64748B] dark:text-slate-400 max-w-[260px] mx-auto leading-normal">
-                {isLogin
-                  ? 'Sign in to access your escrow vaults, milestones, and contributions.'
-                  : 'Start funding verified projects on Ethereum Sepolia.'}
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                {isLogin 
+                  ? 'Sign in to access your escrow vaults, milestones, and contributions.' 
+                  : 'Register credentials to explore, fund, or launch on Sepolia.'}
               </p>
             </div>
 
-            {/* Continue with Google */}
-            <button
-              type="button"
-              onClick={handleGoogleAuth}
-              className="w-full py-2.5 px-4 rounded-full bg-white hover:bg-slate-50 text-[#111827] text-xs font-semibold flex items-center justify-center space-x-2.5 border border-[#E5E2DC] shadow-2xs transition active:scale-[0.99]"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-              <span>Continue with Google</span>
-            </button>
+            {/* Social Authentication Buttons */}
+            <div className="space-y-2.5 mb-4">
+              {/* Google Button */}
+              <button
+                type="button"
+                onClick={handleGoogleAuth}
+                className="w-full py-3 px-4 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-semibold flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-700 shadow-xs transition-all active:scale-[0.99]"
+              >
+                <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" />
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" />
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                </svg>
+                <span>Continue with Google</span>
+              </button>
 
-            {/* Continue with MetaMask */}
-            <button
-              type="button"
-              onClick={handleMetaMaskAuth}
-              className="w-full py-2.5 px-4 rounded-full bg-[#EAE8E2]/65 dark:bg-[#182030] hover:bg-[#E2DFD8] text-[#111827] dark:text-slate-200 text-xs font-semibold flex items-center justify-center space-x-2 border border-[#DDD9D0] dark:border-[#28354E] transition active:scale-[0.99]"
-            >
-              <span>🦊</span>
-              <span>Continue with MetaMask</span>
-            </button>
+              {/* MetaMask Button */}
+              <button
+                type="button"
+                onClick={handleMetaMaskAuth}
+                className="w-full py-3 px-4 rounded-full bg-[#EFEFED] dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-3 border border-slate-200/80 dark:border-slate-700 transition-all active:scale-[0.99]"
+              >
+                <span className="text-base">🦊</span>
+                <span>{account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Continue with MetaMask'}</span>
+              </button>
+            </div>
 
-            {/* OR Divider */}
-            <div className="flex items-center space-x-3 text-[#94A3B8] text-[10px] font-mono">
-              <div className="flex-1 h-px bg-[#E5E2DC] dark:bg-[#20293D]"></div>
-              <span>OR</span>
-              <div className="flex-1 h-px bg-[#E5E2DC] dark:bg-[#20293D]"></div>
+            {/* Divider */}
+            <div className="flex items-center my-4">
+              <div className="flex-1 h-px bg-slate-200/80 dark:bg-slate-700"></div>
+              <span className="px-3 text-[10px] font-semibold text-slate-400 tracking-wider">OR</span>
+              <div className="flex-1 h-px bg-slate-200/80 dark:bg-slate-700"></div>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               {!isLogin && (
-                <div className="space-y-1">
-                  <label className="block text-[11px] font-semibold text-[#111827] dark:text-slate-300">
-                    Full Name
-                  </label>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input
                     type="text"
                     required
+                    placeholder="Akshar Vikram"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Akshar Vikram"
-                    className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-[#EFECE6]/70 dark:bg-[#151D2C] border border-[#DDD9D0] dark:border-[#232F46] focus:border-[#0F946F] outline-none text-[#111827] dark:text-white placeholder-[#94A3B8]"
+                    className="w-full px-4 py-2.5 rounded-2xl bg-[#EBEBE8]/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#15966D]"
                   />
                 </div>
               )}
 
-              <div className="space-y-1">
-                <label className="block text-[11px] font-semibold text-[#111827] dark:text-slate-300">
-                  Email Address
-                </label>
-                <div className="flex items-center px-3 py-2.5 rounded-xl bg-[#EFECE6]/70 dark:bg-[#151D2C] border border-[#DDD9D0] dark:border-[#232F46] focus-within:border-[#0F946F] transition">
-                  <Mail className="w-3.5 h-3.5 text-[#94A3B8] mr-2 flex-shrink-0" />
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
                   <input
                     type="email"
                     required
+                    placeholder="name@institution.edu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@institution.edu"
-                    className="w-full text-xs bg-transparent outline-none text-[#111827] dark:text-white placeholder-[#94A3B8]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#EBEBE8]/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#15966D]"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-[11px] font-semibold text-[#111827] dark:text-slate-300">
-                  Password
-                </label>
-                <div className="flex items-center px-3 py-2.5 rounded-xl bg-[#EFECE6]/70 dark:bg-[#151D2C] border border-[#DDD9D0] dark:border-[#232F46] focus-within:border-[#0F946F] transition">
-                  <Lock className="w-3.5 h-3.5 text-[#94A3B8] mr-2 flex-shrink-0" />
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full text-xs bg-transparent outline-none text-[#111827] dark:text-white placeholder-[#94A3B8]"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-[#EBEBE8]/70 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#15966D]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-[#94A3B8] hover:text-[#111827] dark:hover:text-white ml-1"
+                    className="absolute right-3.5 text-slate-400 hover:text-slate-600 transition"
                   >
-                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
 
+              {!isLogin && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Role Permission</label>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+                    {['Contributor', 'Creator', 'Verifier'].map((r) => (
+                      <button
+                        type="button"
+                        key={r}
+                        onClick={() => setRole(r)}
+                        className={`py-1.5 rounded-xl border transition ${
+                          role === r
+                            ? 'bg-[#15966D]/15 text-[#15966D] border-[#15966D]'
+                            : 'bg-white/60 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-[11px] pt-1">
-                <label className="flex items-center space-x-2 cursor-pointer">
+              <div className="flex items-center justify-between text-xs pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none text-slate-700 dark:text-slate-300">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded accent-[#0F946F] cursor-pointer"
+                    className="w-3.5 h-3.5 rounded text-[#15966D] accent-[#15966D] border-slate-300 focus:ring-0"
                   />
-                  <span className="text-[#111827] dark:text-slate-300 font-medium">Remember me</span>
+                  <span>Remember me</span>
                 </label>
                 <button
                   type="button"
-                  className="text-[#64748B] hover:text-[#111827] dark:hover:text-white font-medium"
+                  onClick={() => alert('Password recovery instructions sent to your email.')}
+                  className="text-slate-600 hover:text-[#15966D] dark:text-slate-400 transition"
                 >
                   Forgot password?
                 </button>
               </div>
 
-              {/* Submit CTA */}
+              {/* Submit CTA Button */}
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-[#0F946F] hover:bg-[#0C7B5C] text-white font-semibold text-xs flex items-center justify-center space-x-1.5 shadow-sm transition active:scale-[0.99] mt-2 cursor-pointer"
+                className="w-full mt-2 py-3 bg-[#15966D] hover:bg-[#117C5A] text-white rounded-full font-semibold text-xs shadow-md flex items-center justify-center gap-2 transition active:scale-[0.99]"
               >
                 <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" />
               </button>
             </form>
 
-            {/* Toggle Login/Register */}
-            <div className="text-center text-[11px] text-[#64748B] dark:text-slate-400 pt-1">
-              {isLogin ? "Don't have an account? " : 'Already registered? '}
+            {/* Toggle Login/Sign Up */}
+            <div className="mt-5 text-center text-xs text-slate-600 dark:text-slate-400">
+              <span>{isLogin ? "Don't have an account? " : 'Already have an account? '}</span>
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[#0F946F] hover:underline font-semibold"
+                className="font-bold text-[#15966D] hover:underline"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
@@ -269,83 +295,68 @@ export default function Auth({ isDarkMode = false }) {
           </div>
         </div>
 
-        {/* Right Column: 3D Crystal Visual & Floating Tags */}
-        <div className="lg:col-span-4 relative flex items-center justify-center">
-          <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center">
-            
-            {/* Glowing tiered crystal pedestals */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-64 h-64 rounded-3xl bg-emerald-500/10 dark:bg-emerald-500/20 blur-xl"></div>
-            </div>
+        {/* ========================================================================= */}
+        {/* RIGHT COLUMN: 3D Crystal & Floating Glass Cards */}
+        {/* ========================================================================= */}
+        <div className="lg:col-span-3 relative flex flex-col items-center justify-center space-y-6">
+          
+          {/* 3D Ethereum Crystal Diamond & Pedestal */}
+          <div className="relative w-full max-w-[280px] aspect-square flex items-center justify-center">
+            {/* Glowing refraction glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500/20 to-amber-300/20 blur-2xl"></div>
 
             {/* Layered Glass Pedestal */}
-            <div className="relative z-10 flex flex-col items-center">
-              {/* Top Floating Ethereum 3D Prism */}
-              <div className="relative w-36 h-48 mb-2 animate-bounce" style={{ animationDuration: '4s' }}>
-                <svg viewBox="0 0 100 160" className="w-full h-full drop-shadow-[0_15px_30px_rgba(15,148,111,0.35)]">
-                  <defs>
-                    <linearGradient id="prismLight" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#DDF3EC" />
-                      <stop offset="50%" stopColor="#7CD0B8" />
-                      <stop offset="100%" stopColor="#0F946F" />
-                    </linearGradient>
-                    <linearGradient id="prismDark" x1="100%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#52B69A" />
-                      <stop offset="100%" stopColor="#085B43" />
-                    </linearGradient>
-                    <linearGradient id="prismMid" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#34A07F" stopOpacity="0.4" />
-                    </linearGradient>
-                  </defs>
+            <div className="absolute bottom-4 w-48 h-8 rounded-full bg-emerald-500/15 border border-emerald-400/30 backdrop-blur-md shadow-lg transform rotate-x-60"></div>
+            <div className="absolute bottom-8 w-40 h-7 rounded-full bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md shadow-md"></div>
+            <div className="absolute bottom-12 w-32 h-6 rounded-full bg-emerald-500/25 border border-emerald-300/50 backdrop-blur-md shadow-sm"></div>
 
-                  {/* Top Pyramid Faces */}
-                  <polygon points="50,10 20,70 50,90" fill="url(#prismLight)" />
-                  <polygon points="50,10 80,70 50,90" fill="url(#prismDark)" />
-                  <polygon points="50,10 50,90 40,65" fill="url(#prismMid)" />
+            {/* 3D Ethereum Diamond Crystal */}
+            <div className="relative z-10 w-32 h-44 filter drop-shadow-[0_20px_25px_rgba(21,150,109,0.35)] transform hover:scale-105 transition-transform duration-500">
+              <svg viewBox="0 0 100 120" className="w-full h-full">
+                <polygon points="50,5 15,55 50,75 85,55" fill="url(#crystalTop)" />
+                <polygon points="50,75 15,55 50,115" fill="url(#crystalBottomLeft)" />
+                <polygon points="50,75 85,55 50,115" fill="url(#crystalBottomRight)" />
+                
+                <defs>
+                  <linearGradient id="crystalTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#E6F7F0" />
+                    <stop offset="40%" stopColor="#5CD2A8" />
+                    <stop offset="100%" stopColor="#15966D" />
+                  </linearGradient>
+                  <linearGradient id="crystalBottomLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0E684C" />
+                    <stop offset="100%" stopColor="#073B2B" />
+                  </linearGradient>
+                  <linearGradient id="crystalBottomRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#25B888" />
+                    <stop offset="100%" stopColor="#15966D" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
 
-                  {/* Bottom Pyramid Faces */}
-                  <polygon points="50,100 20,80 50,150" fill="url(#prismLight)" opacity="0.85" />
-                  <polygon points="50,100 80,80 50,150" fill="url(#prismDark)" opacity="0.85" />
-                </svg>
-              </div>
-
-              {/* Tier 1 Glass Disc */}
-              <div className="w-48 h-8 rounded-[50%] bg-emerald-500/20 border border-emerald-400/40 backdrop-blur-md -mt-6 shadow-lg transform rotate-x-60"></div>
-              {/* Tier 2 Glass Disc */}
-              <div className="w-56 h-10 rounded-[50%] bg-emerald-500/15 border border-emerald-400/30 backdrop-blur-md -mt-4 shadow-xl"></div>
-              {/* Tier 3 Glass Disc */}
-              <div className="w-64 h-12 rounded-[50%] bg-emerald-500/10 border border-emerald-400/20 backdrop-blur-md -mt-4 shadow-2xl"></div>
+          {/* 3 Floating Frosted Glass Cards */}
+          <div className="w-full space-y-2.5 max-w-[200px]">
+            <div className="px-4 py-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-white/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-center text-xs font-bold text-slate-800 dark:text-slate-200">
+              Ideas Verified
             </div>
 
-            {/* Floating Glass Badges on the right of the crystal */}
-            <div className="absolute right-0 top-6 space-y-3 z-20">
-              <div className="bg-white/85 dark:bg-[#131B2B]/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/80 dark:border-white/10 shadow-sm text-left max-w-[130px]">
-                <div className="text-[11px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
-                  Ideas<br />Verified
-                </div>
-              </div>
+            <div className="px-4 py-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-white/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-center text-xs font-bold text-slate-800 dark:text-slate-200">
+              Funds Protected
+            </div>
 
-              <div className="bg-white/85 dark:bg-[#131B2B]/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/80 dark:border-white/10 shadow-sm text-left max-w-[130px]">
-                <div className="text-[11px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
-                  Funds<br />Protected
-                </div>
-              </div>
-
-              <div className="bg-white/85 dark:bg-[#131B2B]/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/80 dark:border-white/10 shadow-sm text-left max-w-[130px]">
-                <div className="text-[11px] font-bold text-[#111827] dark:text-slate-100 leading-tight">
-                  Builders<br />Empowered
-                </div>
-              </div>
+            <div className="px-4 py-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-white/80 dark:border-slate-700 backdrop-blur-md shadow-xs text-center text-xs font-bold text-slate-800 dark:text-slate-200">
+              Builders Empowered
             </div>
           </div>
 
           {/* Bottom Right Quote */}
-          <div className="absolute -bottom-6 right-0 text-right max-w-[200px] space-y-1">
-            <p className="text-[11px] text-[#64748B] dark:text-slate-400 italic leading-snug">
+          <div className="text-right pt-4 border-t border-slate-300/40 dark:border-slate-800 w-full max-w-[220px]">
+            <p className="text-[11px] italic text-slate-500 dark:text-slate-400 leading-relaxed">
               "A more open, fair, and trustworthy internet for builders."
             </p>
-            <div className="text-[10px] text-[#0F946F] font-mono">—</div>
+            <div className="w-6 h-0.5 bg-slate-400 mt-1 ml-auto"></div>
           </div>
         </div>
 
