@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Search, CheckCircle2 } from 'lucide-react';
+import { Search, ShieldCheck, ArrowUpRight, Activity } from 'lucide-react';
 
 export default function Explore() {
   const { campaigns, setActiveCampaignId, setCurrentView } = useApp();
@@ -17,54 +17,66 @@ export default function Explore() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      {/* Institutional Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-5">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Campaign Marketplace</h1>
-          <p className="text-xs text-slate-500">Auditable escrow campaigns with AI risk telemetry</p>
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+              Escrow Market
+            </span>
+            <span className="text-[11px] font-mono text-zinc-500">Live Consensus Verification</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+            Campaign Marketplace
+          </h1>
+          <p className="text-xs text-zinc-400">
+            Auditable decentralized escrow tranches with real-time multi-agent AI risk telemetry
+          </p>
         </div>
+
+        {/* Search Bar */}
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search contracts..."
+              placeholder="Search contracts, creators, tags..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 w-48 sm:w-64 shadow-2xs"
+              className="pl-9 pr-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 w-64 sm:w-72 transition-all shadow-inner"
             />
           </div>
         </div>
       </div>
 
-      {/* Filter Chips */}
+      {/* Filter Chips Bar */}
       <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
-        <span className="text-slate-400 text-[11px] mr-2">CATEGORY:</span>
+        <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mr-1">Category</span>
         {['ALL', 'Hardware', 'Cleantech', 'Open Source'].map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-2.5 py-1 rounded-lg border transition-colors ${
-              selectedCategory === cat 
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 font-semibold' 
-                : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900'
+            className={`px-3 py-1.5 rounded-lg border transition-all text-xs ${
+              selectedCategory === cat
+                ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 font-semibold shadow-xs'
+                : 'bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700'
             }`}
           >
             {cat}
           </button>
         ))}
 
-        <div className="h-4 w-px bg-slate-200 mx-2"></div>
+        <div className="h-4 w-px bg-zinc-800 mx-2 hidden sm:block"></div>
 
-        <span className="text-slate-400 text-[11px] mr-2">RISK:</span>
+        <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mr-1">Risk Rating</span>
         {['ALL', 'LOW', 'MEDIUM', 'HIGH'].map((risk) => (
           <button
             key={risk}
             onClick={() => setSelectedRisk(risk)}
-            className={`px-2.5 py-1 rounded-lg border transition-colors ${
-              selectedRisk === risk 
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 font-semibold' 
-                : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900'
+            className={`px-3 py-1.5 rounded-lg border transition-all text-xs ${
+              selectedRisk === risk
+                ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 font-semibold shadow-xs'
+                : 'bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:border-zinc-700'
             }`}
           >
             {risk}
@@ -72,74 +84,101 @@ export default function Explore() {
         ))}
       </div>
 
-      {/* Campaigns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((c) => {
           const isLow = c.riskLevel === 'LOW';
           const isMed = c.riskLevel === 'MEDIUM';
+          const hardCap = c.hardCap || 20;
+          const minGoal = c.goal || 10;
+          const raised = c.totalRaised || c.raised || 0;
+          const capPct = Math.min((raised / hardCap) * 100, 100);
+          const goalPct = (minGoal / hardCap) * 100;
 
           return (
             <div
               key={c.id}
-              className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-sm hover:border-emerald-300 transition-colors"
+              className="bg-zinc-900/70 backdrop-blur-md border border-zinc-800/80 shadow-xl rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-zinc-700 hover:-translate-y-1 transition-all duration-200 group"
             >
+              {/* Top Meta */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="px-2.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700/60">
                     {c.category}
                   </span>
                   {c.verified ? (
-                    <span className="text-emerald-700 font-medium flex items-center space-x-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Verified ID</span>
+                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <span>KYC Verified</span>
                     </span>
                   ) : (
-                    <span className="text-amber-600">Pending Review</span>
+                    <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                      <span>Pending Audit</span>
+                    </span>
                   )}
                 </div>
 
-                <h3 className="text-sm font-bold text-slate-900 tracking-tight leading-snug">
+                <h3 className="text-base font-bold text-zinc-100 tracking-tight leading-snug group-hover:text-cyan-400 transition-colors">
                   {c.title}
                 </h3>
-                <p className="text-xs text-slate-500 line-clamp-2">
+                <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
                   {c.summary}
                 </p>
-                <div className="text-[11px] font-mono text-slate-400">
-                  Creator: {c.creator.slice(0, 8)}...{c.creator.slice(-6)}
+
+                {/* Creator Chip */}
+                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500 pt-1">
+                  <span>Creator:</span>
+                  <span className="text-zinc-400 bg-zinc-950/60 px-2 py-0.5 rounded border border-zinc-800/80">
+                    {c.creator.slice(0, 6)}...{c.creator.slice(-4)}
+                  </span>
                 </div>
               </div>
 
-              {/* Progress & Cap */}
-              <div className="space-y-2 pt-3 border-t border-slate-100">
-                <div className="flex justify-between items-center text-xs font-mono">
+              {/* Progress & Dual-Target Telemetry */}
+              <div className="space-y-3 pt-3 border-t border-zinc-800/80">
+                <div className="flex justify-between items-baseline text-xs font-mono">
                   <div>
-                    <span className="text-slate-900 font-bold">{c.totalRaised.toFixed(2)} ETH</span>
-                    <span className="text-slate-400"> / 20.00 ETH</span>
+                    <span className="text-zinc-100 font-bold text-sm">{raised.toFixed(2)} ETH</span>
+                    <span className="text-zinc-500 text-[11px]"> / {hardCap.toFixed(1)} ETH Cap</span>
                   </div>
-                  <span className="text-emerald-600 text-[11px] font-semibold">{(c.hardCap - c.totalRaised).toFixed(2)} ETH Rem</span>
+                  <span className="text-cyan-400 text-[11px] font-semibold">
+                    {capPct.toFixed(1)}% Filled
+                  </span>
                 </div>
 
-                {/* Bar */}
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                {/* Dual-Target Progress Bar */}
+                <div className="relative w-full h-2.5 bg-zinc-800/80 rounded-full overflow-visible">
+                  {/* Min Goal Marker */}
                   <div
-                    className="h-full bg-emerald-500 rounded-full"
-                    style={{ width: `${(c.totalRaised / c.hardCap) * 100}%` }}
-                  ></div>
+                    className="absolute top-0 bottom-0 w-0.5 bg-zinc-200 z-10"
+                    style={{ left: `${goalPct}%` }}
+                    title={`Goal: ${minGoal} ETH`}
+                  />
+                  {/* Progress Fill */}
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-cyan-500 to-emerald-400 transition-all duration-500"
+                    style={{ width: `${capPct}%` }}
+                  />
                 </div>
 
-                {/* Risk Pill & Actions */}
+                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                  <span>Min Goal: {minGoal} ETH</span>
+                  <span>Rem: {(hardCap - raised).toFixed(2)} ETH</span>
+                </div>
+
+                {/* AI Risk Score Pill & Inspect Button */}
                 <div className="flex items-center justify-between pt-2">
                   <span
-                    className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-mono border ${
+                    className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-[10px] font-mono font-medium border ${
                       isLow
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                         : isMed
-                        ? 'bg-amber-50 text-amber-700 border-amber-200'
-                        : 'bg-rose-50 text-rose-700 border-rose-200'
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                        : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                     }`}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                    <span>{c.mlScore}% Prob | {c.riskLevel}</span>
+                    <Activity className="w-3 h-3" />
+                    <span>AI: {c.mlScore}% {c.riskLevel}</span>
                   </span>
 
                   <button
@@ -147,9 +186,10 @@ export default function Explore() {
                       setActiveCampaignId(c.id);
                       setCurrentView('Campaign');
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-50 border border-slate-200 text-slate-800 hover:text-emerald-700 text-xs font-semibold tracking-tight transition-colors"
+                    className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-zinc-200 hover:text-white text-xs font-semibold tracking-tight transition-all shadow-xs"
                   >
-                    Inspect & Contribute →
+                    <span>Inspect</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
