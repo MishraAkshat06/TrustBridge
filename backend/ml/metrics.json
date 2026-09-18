@@ -1,0 +1,8 @@
+{
+  "precision": 0.7005,
+  "recall": 0.7562,
+  "f1": 0.7273,
+  "roc_auc": 0.7345,
+  "brier_score": 0.2095,
+  "samples_evaluated": 375
+}

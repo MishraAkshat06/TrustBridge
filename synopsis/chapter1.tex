@@ -1,0 +1,19 @@
+\chapter{Introduction}
+
+Crowdfunding has emerged as a widely adopted mechanism for early-stage project financing, enabling creators to raise capital directly from a global community of contributors. Platforms such as Kickstarter and Indiegogo have collectively facilitated billions of dollars in funding; however, they are fundamentally centralised systems that provide contributors with limited tools to assess campaign quality before committing funds, and no programmable mechanism to enforce creator accountability after funding is received.
+
+Two structural problems persist in existing crowdfunding models. First, contributors rely almost entirely on self-reported campaign information — descriptions, images, and reward tiers — with no objective, data-driven signal about the likelihood of a campaign succeeding or the credibility of the creator behind it. Second, once funds are released to a creator, the platform has no enforceable obligation to ensure milestones are met; contributors have no recourse if a project stalls or fails to deliver.
+
+TrustBridge addresses both problems through an integrated architecture that applies three complementary technologies to the crowdfunding context:
+
+\begin{enumerate}
+    \item \textbf{Machine Learning and Agentic AI} — to assess, explain, and communicate campaign risk and success probability to contributors before they commit funds.
+    \item \textbf{Smart-Contract Escrow} — to enforce programmable financial rules: a hard cap, staged release tranches, and automatic refunds — without relying on platform discretion.
+    \item \textbf{Human-Verified Milestones} — to gate later funding tranches behind evidence of real-world progress, reviewed by AI and approved by an authorised verifier, thereby maintaining accountability through the project lifecycle.
+\end{enumerate}
+
+The core principle governing TrustBridge is: \textit{AI helps users decide. Humans verify real-world milestones. Smart contracts control predefined financial rules. Blockchain records the result.}
+
+TrustBridge is built on the Ethereum Sepolia testnet using Solidity smart contracts, a React.js and Tailwind CSS frontend with MetaMask wallet integration, a Python Flask backend, and a scikit-learn ML pipeline. Creator identity is verified off-chain through a mock KYC module, ensuring that no personally identifiable information is stored on the blockchain.
+
+This synopsis describes the problem statement, objectives, proposed architecture, ML methodology, Agentic AI design, blockchain implementation, related work, hardware and software requirements, predicted timeline, and expected outcomes for the TrustBridge project.

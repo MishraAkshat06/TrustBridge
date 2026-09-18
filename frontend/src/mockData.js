@@ -1,0 +1,65 @@
+export const MOCK_CAMPAIGNS = [
+  {
+    id: "1",
+    title: "AuraMesh: Decentralized IoT Edge Sensing Node",
+    category: "Hardware / IoT",
+    verified: true,
+    creator: "0x3Fa8B43a8B4512CdEf8798C3953508495a02241F",
+    summary: "Ultra-low power LoRaWAN sensing node with hardware-enforced secure element and cryptographic proof of location.",
+    goal: 10.0,
+    hardCap: 20.0,
+    totalRaised: 14.5,
+    deadlineDays: 18,
+    mlScore: 84,
+    riskLevel: "LOW",
+    riskDetails: "Strong launch profile. Realistic hardware bill-of-materials and balanced 4-stage milestone deliverables.",
+    milestones: [
+      { id: 1, title: "Tranche 1: Prototype Architecture & BOM", percentage: 20, status: "APPROVED", evidence: "https://github.com/auramesh/firmware-v1" },
+      { id: 2, title: "Tranche 2: PCB Fabrication & Bench Testing", percentage: 25, status: "UNDER_REVIEW", evidence: "https://demo.auramesh.io/bench-v2" },
+      { id: 3, title: "Tranche 3: Field Testing & Gateway Integration", percentage: 25, status: "PENDING", evidence: "" },
+      { id: 4, title: "Tranche 4: Volume Production & SDK Release", percentage: 30, status: "PENDING", evidence: "" },
+    ]
+  },
+  {
+    id: "2",
+    title: "EcoPulse: Modular Biogas Digester Telemetry",
+    category: "Cleantech",
+    verified: true,
+    creator: "0x7890Ac56DeF1234567890abcdef1234567890123",
+    summary: "Automated anaerobic digestion monitor reporting methane yield, temperature, and pH telemetry to public verification nodes.",
+    goal: 10.0,
+    hardCap: 20.0,
+    totalRaised: 8.2,
+    deadlineDays: 24,
+    mlScore: 68,
+    riskLevel: "MEDIUM",
+    riskDetails: "Deliverables are moderately complex; milestone schedule relies heavily on custom sensor calibration.",
+    milestones: [
+      { id: 1, title: "Tranche 1: Sensor Enclosure & Schematics", percentage: 20, status: "PENDING", evidence: "" },
+      { id: 2, title: "Tranche 2: Field Sensor Calibration", percentage: 25, status: "PENDING", evidence: "" },
+      { id: 3, title: "Tranche 3: Edge Firmware & Validation", percentage: 25, status: "PENDING", evidence: "" },
+      { id: 4, title: "Tranche 4: Open Telemetry Gateway Launch", percentage: 30, status: "PENDING", evidence: "" },
+    ]
+  },
+  {
+    id: "3",
+    title: "VeriChain: Rust Zero-Knowledge Proof Engine",
+    category: "Open Source / Web3",
+    verified: false,
+    creator: "0x4321FedCba09876543210fedcba09876543210fe",
+    summary: "Modular recursive SNARK verifier tailored for low-resource microcontrollers and embedded security processors.",
+    goal: 10.0,
+    hardCap: 20.0,
+    totalRaised: 18.9,
+    deadlineDays: 5,
+    mlScore: 42,
+    riskLevel: "HIGH",
+    riskDetails: "High technical difficulty with unverified developer credentials. Audit team recommends manual verifier review.",
+    milestones: [
+      { id: 1, title: "Tranche 1: Core Math Engine Specification", percentage: 20, status: "APPROVED", evidence: "https://github.com/verichain/core" },
+      { id: 2, title: "Tranche 2: Microcontroller Benchmarking", percentage: 25, status: "PENDING", evidence: "" },
+      { id: 3, title: "Tranche 3: Security Formal Audit", percentage: 25, status: "PENDING", evidence: "" },
+      { id: 4, title: "Tranche 4: Mainnet Protocol Release", percentage: 30, status: "PENDING", evidence: "" },
+    ]
+  }
+];

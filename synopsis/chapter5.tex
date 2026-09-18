@@ -1,0 +1,35 @@
+\chapter{Related Work}
+
+A substantial body of literature exists across the individual components of TrustBridge. This chapter reviews the most directly relevant work and identifies the research gap that TrustBridge addresses.
+
+\section{Crowdfunding Success Prediction}
+
+Elitzur et al. (2024) conducted a comprehensive study of ML methods for crowdfunding success prediction, establishing that classification models trained on campaign metadata can achieve meaningful predictive accuracy. Their work provides the methodological baseline for TrustBridge's ML module. Ardakani et al. (2024) extended this line of research by incorporating both numerical campaign features and textual campaign descriptions using NLP techniques, demonstrating that combined feature sets outperform numerical-only models. Feng et al. (2024) contributed feature-selection methods for compact, interpretable crowdfunding prediction models, informing TrustBridge's feature engineering strategy.
+
+\section{Crowdfunding Fraud and Risk Detection}
+
+Perez et al. (2020), in their paper ``I Call BS: Fraud Detection in Crowdfunding Campaigns,'' applied ML to identify fraudulent or misleading campaigns using linguistic and metadata signals. This work is directly relevant to TrustBridge's anomaly detection module. Their finding that success prediction and fraud detection are distinct tasks — requiring separate models — motivates TrustBridge's architectural decision to implement a separate Isolation Forest risk module alongside the success prediction classifier.
+
+\section{Explainable ML in Crowdfunding}
+
+Gafrej et al. (2026) applied SHAP (SHapley Additive exPlanations) to explain ML predictions for technology reward crowdfunding campaigns, demonstrating that contributors respond more positively to predictions when accompanied by explanations. This work motivates TrustBridge's Agentic AI explanation layer and constitutes empirical support for Experiment B (explanation quality assessment).
+
+\section{Investor and Contributor Dynamics}
+
+Porro et al. (2024) studied temporal dynamics in equity and lending crowdfunding using ML, finding that contributor behaviour evolves as a campaign progresses. While TrustBridge focuses on launch-time prediction, this work suggests a future direction of dynamic risk updating across the campaign lifecycle.
+
+\section{Blockchain-Based Crowdfunding}
+
+Recent research has examined blockchain as an infrastructure for crowdfunding, focusing on smart-contract escrow, fund traceability, and decentralised governance. Studies have demonstrated that Ethereum smart contracts can reliably enforce contribution limits, automate refunds, and release funds based on predefined conditions. TrustBridge builds directly on this body of work by implementing a production-quality escrow contract on Sepolia.
+
+\section{Research Gap}
+
+Individually, ML crowdfunding prediction, blockchain escrow, and explainable AI are well-studied. However, no prior work — to the best of the authors' knowledge — has proposed and evaluated an integrated architecture that combines all four components: (1) ML success prediction and anomaly detection at the assessment stage, (2) Agentic AI explanation and evidence review across the campaign lifecycle, (3) off-chain creator identity verification, and (4) programmable milestone-based escrow enforced by a Solidity smart contract. TrustBridge addresses this gap and evaluates the integrated architecture empirically.
+
+\section{Conclusion}
+
+The related work establishes strong individual foundations for each component of TrustBridge but confirms the absence of an integrated, empirically evaluated system of the kind TrustBridge proposes. The research contribution is the integration and evaluation, not any single component in isolation.
+
+\section{Future Scope}
+
+Future work may extend TrustBridge in several directions: (a) dynamic risk scoring that updates as campaign contributions progress; (b) multi-signature verifier approval for milestone decisions; (c) deployment to Ethereum mainnet with real KYC compliance; (d) NLP-based analysis of creator communication patterns across the campaign lifecycle; and (e) a decentralised autonomous organisation (DAO) governance layer for verifier selection.

@@ -1,0 +1,41 @@
+\contentsline {section}{Declaration}{vi}{}%
+\contentsline {section}{Certificate}{vii}{}%
+\contentsline {section}{Abstract}{viii}{}%
+\contentsline {section}{List of Figures}{ix}{}%
+\contentsline {section}{List of Tables}{x}{}%
+\contentsline {section}{List of Symbols and Abbreviations}{xi}{}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{}%
+\contentsline {chapter}{\numberline {2}Motivation}{3}{}%
+\contentsline {chapter}{\numberline {3}Objectives}{5}{}%
+\contentsline {chapter}{\numberline {4}Scope of the Project}{7}{}%
+\contentsline {section}{\numberline {4.1}Proposed System Architecture}{7}{}%
+\contentsline {section}{\numberline {4.2}End-to-End Workflow}{7}{}%
+\contentsline {section}{\numberline {4.3}In Scope}{7}{}%
+\contentsline {section}{\numberline {4.4}Out of Scope}{9}{}%
+\contentsline {section}{\numberline {4.5}System Boundary}{9}{}%
+\contentsline {chapter}{\numberline {5}Related Work}{10}{}%
+\contentsline {section}{\numberline {5.1}Crowdfunding Success Prediction}{10}{}%
+\contentsline {section}{\numberline {5.2}Crowdfunding Fraud and Risk Detection}{10}{}%
+\contentsline {section}{\numberline {5.3}Explainable ML in Crowdfunding}{11}{}%
+\contentsline {section}{\numberline {5.4}Investor and Contributor Dynamics}{11}{}%
+\contentsline {section}{\numberline {5.5}Blockchain-Based Crowdfunding}{11}{}%
+\contentsline {section}{\numberline {5.6}Research Gap}{11}{}%
+\contentsline {section}{\numberline {5.7}Conclusion}{12}{}%
+\contentsline {section}{\numberline {5.8}Future Scope}{12}{}%
+\contentsline {chapter}{\numberline {6}Hardware \& Software Requirements}{13}{}%
+\contentsline {section}{\numberline {6.1}Hardware Requirements}{13}{}%
+\contentsline {section}{\numberline {6.2}Software Requirements}{13}{}%
+\contentsline {subsection}{\numberline {6.2.1}Frontend}{13}{}%
+\contentsline {subsection}{\numberline {6.2.2}Backend}{14}{}%
+\contentsline {subsection}{\numberline {6.2.3}Machine Learning}{14}{}%
+\contentsline {subsection}{\numberline {6.2.4}Agentic AI}{14}{}%
+\contentsline {subsection}{\numberline {6.2.5}Blockchain}{14}{}%
+\contentsline {subsection}{\numberline {6.2.6}Development Tools}{15}{}%
+\contentsline {subsection}{\numberline {6.2.7}Operating System}{15}{}%
+\contentsline {chapter}{\numberline {7}Predicted Timeline for the Project}{16}{}%
+\contentsline {chapter}{\numberline {8}Conclusion}{18}{}%
+\contentsline {chapter}{References}{19}{}%
+\contentsline {chapter}{\numberline {A}Plagiarism Report}{21}{}%
+\contentsline {section}{\numberline {A.1}Plagiarism Report}{21}{}%
+\contentsline {section}{\numberline {A.2}AI Content Report}{21}{}%
+\contentsfinish 

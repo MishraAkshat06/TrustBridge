@@ -1,0 +1,82 @@
+\chapter{Hardware \& Software Requirements}
+
+\section{Hardware Requirements}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Component} & \textbf{Minimum Specification} \\ \hline
+Processor & Intel Core i5 (8th Gen) or equivalent, 2.0 GHz \\ \hline
+RAM & 8 GB DDR4 \\ \hline
+Storage & 20 GB free disk space (SSD preferred) \\ \hline
+Display & 1366 × 768 resolution \\ \hline
+Internet & Stable broadband connection (for Sepolia RPC and LLM API) \\ \hline
+Browser & Google Chrome 110+ or Firefox 110+ (for MetaMask) \\ \hline
+\end{tabular}
+\caption{Hardware Requirements for TrustBridge Development and Testing}
+\end{table}
+
+\section{Software Requirements}
+
+\subsection{Frontend}
+\begin{itemize}
+    \item React.js 18.x with Vite build tool
+    \item Tailwind CSS 3.x
+    \item Ethers.js v6 (blockchain interaction)
+    \item MetaMask browser extension (wallet)
+    \item Axios (HTTP client for Flask API)
+    \item React Router v6 (client-side routing)
+    \item Recharts (campaign progress charts)
+\end{itemize}
+
+\subsection{Backend}
+\begin{itemize}
+    \item Python 3.10+
+    \item Flask 3.x (REST API framework)
+    \item Flask-CORS (cross-origin resource sharing)
+    \item SQLite (off-chain campaign and KYC metadata)
+    \item python-dotenv (environment variable management)
+\end{itemize}
+
+\subsection{Machine Learning}
+\begin{itemize}
+    \item pandas, NumPy (data preprocessing)
+    \item scikit-learn (Logistic Regression, Random Forest, Isolation Forest)
+    \item XGBoost / Gradient Boosting (optional comparison model)
+    \item joblib (model serialisation and loading)
+    \item Historical crowdfunding dataset (Kaggle Kickstarter dataset)
+\end{itemize}
+
+\subsection{Agentic AI}
+\begin{itemize}
+    \item NVIDIA Nemotron or equivalent LLM (via API)
+    \item Python orchestration layer (custom agent classes)
+    \item requests (LLM API HTTP calls)
+\end{itemize}
+
+\subsection{Blockchain}
+\begin{itemize}
+    \item Solidity \^{}0.8.0 (smart contract language)
+    \item Remix IDE (contract development and deployment)
+    \item Ethereum Sepolia testnet (Chain ID: 11155111)
+    \item Alchemy or Infura (Sepolia RPC provider)
+    \item Etherscan Sepolia (transaction verification)
+    \item MetaMask (testnet wallet)
+    \item Test ETH via Sepolia faucet (sepoliafaucet.com)
+\end{itemize}
+
+\subsection{Development Tools}
+\begin{itemize}
+    \item Visual Studio Code / Antigravity IDE (code editor)
+    \item Git and GitHub (version control)
+    \item Node.js 18+ and npm (frontend package management)
+    \item Postman (API testing)
+    \item Google Sheets or Excel (test data recording)
+\end{itemize}
+
+\subsection{Operating System}
+\begin{itemize}
+    \item Windows 10/11, macOS 12+, or Ubuntu 20.04+ (any of these is sufficient)
+\end{itemize}

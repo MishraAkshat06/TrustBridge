@@ -1,0 +1,60 @@
+\newgeometry{top=35mm}
+
+\addcontentsline{toc}{section}{List of Figures}
+\begin{center}
+\listoffigures
+\end{center}
+
+\newpage
+\newgeometry{top=35mm}
+\addcontentsline{toc}{section}{List of Tables}
+\begin{center}
+\listoftables
+\end{center}
+
+\newpage
+\newgeometry{top=35mm}
+\addcontentsline{toc}{section}{List of Symbols and Abbreviations}
+\begin{center}
+\section*{\size{\textbf{LIST OF SYMBOLS/ ABBREVIATIONS}}}
+\end{center}
+
+\begingroup
+\setstretch{1.5}
+\begin{longtable}{@{}p{0.25\textwidth}p{0.70\textwidth}@{}}
+\textbf{Symbol} & \textbf{Description} \\[2mm]
+\endfirsthead
+\textbf{Symbol} & \textbf{Description} \\[2mm]
+\endhead
+AI & Artificial Intelligence \\
+API & Application Programming Interface \\
+ABI & Application Binary Interface \\
+dApp & Decentralised Application \\
+ETH & Ether (Ethereum cryptocurrency unit) \\
+KYC & Know Your Customer \\
+LLM & Large Language Model \\
+LR & Logistic Regression \\
+ML & Machine Learning \\
+MVP & Minimum Viable Product \\
+NLP & Natural Language Processing \\
+POC & Proof of Concept \\
+REST & Representational State Transfer \\
+RF & Random Forest \\
+ROC-AUC & Receiver Operating Characteristic -- Area Under Curve \\
+RPC & Remote Procedure Call \\
+SHAP & SHapley Additive exPlanations \\
+TX & Transaction \\
+UI/UX & User Interface / User Experience \\
+\end{longtable}
+\endgroup
+
+\newpage
+\newgeometry{top=35mm}
+
+\renewcommand*\contentsname{\size\textbf{TABLE OF CONTENTS}}
+
+\begin{center}
+\tableofcontents
+\end{center}
+
+\restoregeometry

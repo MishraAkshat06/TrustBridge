@@ -1,0 +1,25 @@
+\chapter{Objectives}
+
+The primary objective of TrustBridge is to design, implement, and evaluate an integrated crowdfunding platform that combines ML-based campaign assessment, Agentic AI explanation, off-chain creator verification, and blockchain-enforced milestone escrow.
+
+The specific objectives are as follows:
+
+\begin{enumerate}
+
+    \item \textbf{Campaign Success Prediction} — Train and evaluate ML classifiers (Logistic Regression, Random Forest, Gradient Boosting) to predict crowdfunding campaign success using only launch-time features, reporting precision, recall, F1, ROC-AUC, and Brier score for each model.
+
+    \item \textbf{Risk and Anomaly Detection} — Apply an Isolation Forest anomaly detection model to identify statistically unusual campaigns and return a calibrated risk signal (LOW / MEDIUM / HIGH) accompanied by an explicit disclaimer that it is not a fraud verdict.
+
+    \item \textbf{Agentic AI Assessment and Explanation} — Implement four AI agents — Campaign Analyzer, Risk Analyst, Evidence Reviewer, and Explainer — that synthesize ML outputs, campaign metadata, and milestone evidence into structured, human-readable assessments using a large language model (LLM) backend.
+
+    \item \textbf{Creator Identity Verification} — Implement an off-chain mock KYC module that assigns creators a Verified / Pending / Rejected status, ensuring that no raw identity document is stored on the blockchain.
+
+    \item \textbf{Smart-Contract Escrow with Hard Cap} — Deploy a Solidity smart contract on the Ethereum Sepolia testnet that (a) enforces a 20 ETH hard cap, automatically refunding excess contributions; (b) holds all contributor funds in escrow; (c) releases an initial 20\% tranche upon goal attainment; and (d) gates subsequent tranches behind approved milestones.
+
+    \item \textbf{Milestone-Based Staged Funding} — Implement a four-milestone release schedule (20\%, 25\%, 25\%, 30\%) in which each tranche is released only after the creator submits evidence, the Evidence Reviewer agent analyzes it, and an authorised human verifier approves or rejects the milestone.
+
+    \item \textbf{Contributor-Facing Transparency} — Present contributors with a unified campaign detail page showing creator verification status, ML success probability, AI risk explanation, milestone tracker, and on-chain transaction history — all in a single interface.
+
+    \item \textbf{Research Evaluation} — Conduct four structured experiments: (A) ML model comparison, (B) explanation quality assessment, (C) smart-contract correctness and edge-case testing, and (D) full end-to-end workflow validation, to produce results suitable for a research paper.
+
+\end{enumerate}

@@ -1,0 +1,103 @@
+\chapter{Scope of the Project}
+
+TrustBridge is scoped as an academic MVP (Minimum Viable Product) and research prototype targeting the Ethereum Sepolia testnet. The scope is defined along three dimensions: the proposed system architecture, what the system will include, and what it explicitly excludes.
+
+\section{Proposed System Architecture}
+
+TrustBridge is organised as a five-layer architecture in which the advisory intelligence layer and the financial-control layer are deliberately kept separate. The Application Layer (Flask + scikit-learn + Agentic AI) computes risk and success signals but never holds funds or private keys, while the Smart Contract Layer holds all contributor funds in escrow and executes only predefined, human-authorised release rules. Figure~\ref{fig:arch} shows the layered decomposition and the direction of data flow between layers.
+
+\begin{figure}[h!]
+\centering
+\begingroup
+\setstretch{1}
+\begin{tikzpicture}[
+  font=\small,
+  layer/.style={draw, rounded corners=3pt, align=center, text width=13.6cm, inner sep=6pt},
+  flow/.style={-{Latex[length=2mm]}, thick},
+  node distance=6mm
+]
+\node[layer] (pres) {\textbf{Presentation Layer} \\ React.js + Vite, Tailwind CSS, Ethers.js v6, MetaMask \\ Explore $\cdot$ Campaign Details $\cdot$ Create Campaign $\cdot$ Dashboards $\cdot$ Evidence $\cdot$ History};
+\node[layer, below=of pres] (app) {\textbf{Application Layer (Off-Chain, Advisory)} \\ Python + Flask REST API $\cdot$ pandas / NumPy / scikit-learn \\ Success Prediction $\cdot$ Isolation Forest Anomaly Scoring $\cdot$ Mock KYC};
+\node[layer, below=of app] (ai) {\textbf{Agentic AI Layer (Advisory Only --- No Key Custody)} \\ Campaign Analyzer $\cdot$ Risk Analyst $\cdot$ Evidence Reviewer $\cdot$ Explainer};
+\node[layer, below=of ai] (sc) {\textbf{Smart Contract Layer (On-Chain, Authoritative)} \\ Solidity $\hat{~}$0.8.0 $\cdot$ Escrow $\cdot$ 20 ETH Hard Cap $\cdot$ Four-Tranche Milestone Release \\ Verifier Access Control $\cdot$ Refund Rules $\cdot$ Events};
+\node[layer, below=of sc] (infra) {\textbf{Infrastructure Layer} \\ Ethereum Sepolia Testnet (Chain ID 11155111) $\cdot$ Alchemy/Infura RPC $\cdot$ Etherscan};
+
+\draw[flow] (pres) -- node[right, font=\scriptsize] {campaign metadata, ML/AI requests} (app);
+\draw[flow] (app) -- node[right, font=\scriptsize] {structured facts + ML scores} (ai);
+\draw[flow] (pres.west) -- ++(-0.6,0) |- node[left, font=\scriptsize, align=right] {signed\\transactions} (sc.west);
+\draw[flow] (sc) -- node[right, font=\scriptsize] {on-chain execution} (infra);
+\draw[flow] (ai.east) -- ++(0.6,0) |- node[right, font=\scriptsize, align=left] {advisory\\JSON} (pres.east);
+\end{tikzpicture}
+\endgroup
+\caption{TrustBridge Five-Layer System Architecture}
+\label{fig:arch}
+\end{figure}
+
+The separation of concerns is the key design principle: advisory intelligence informs human decisions, and only a smart contract --- triggered by an authorised human verifier --- moves money.
+
+\section{End-to-End Workflow}
+
+Figure~\ref{fig:flow} summarises the operational sequence encoded by the core principle \textit{Verify $\rightarrow$ Assess $\rightarrow$ Decide $\rightarrow$ Escrow $\rightarrow$ Build $\rightarrow$ Prove $\rightarrow$ Release/Refund $\rightarrow$ Audit}.
+
+\begin{figure}[h!]
+\centering
+\begingroup
+\setstretch{1}
+\begin{tikzpicture}[
+  font=\small,
+  wfbox/.style={draw, rounded corners=3pt, align=center, text width=3.0cm, minimum height=1.0cm, inner sep=4pt},
+  flow/.style={-{Latex[length=2mm]}, thick}
+]
+\node[wfbox] (s1) {Creator KYC \\ (off-chain)};
+\node[wfbox, right=6mm of s1] (s2) {Campaign \\ Created};
+\node[wfbox, right=6mm of s2] (s3) {ML + Agentic \\ AI Assessment};
+\node[wfbox, right=6mm of s3] (s4) {Published to \\ Contributors};
+
+\node[wfbox, below=10mm of s1] (s8) {Audit Trail \\ on Etherscan};
+\node[wfbox, right=6mm of s8] (s7) {Tranche Release \\ or Refund};
+\node[wfbox, right=6mm of s7] (s6) {AI Review + \\ Human Verifier};
+\node[wfbox, right=6mm of s6] (s5) {ETH Escrowed \\ in Contract};
+
+\draw[flow] (s1) -- (s2);
+\draw[flow] (s2) -- (s3);
+\draw[flow] (s3) -- (s4);
+\draw[flow] (s4) -- (s5);
+\draw[flow] (s5) -- (s6);
+\draw[flow] (s6) -- (s7);
+\draw[flow] (s7) -- (s8);
+\end{tikzpicture}
+\endgroup
+\caption{TrustBridge End-to-End Funding and Verification Workflow}
+\label{fig:flow}
+\end{figure}
+
+\section{In Scope}
+
+\begin{itemize}
+    \item A fully functional web application with nine frontend pages: Home/Explore, Campaign Details, Create Campaign, Creator Dashboard, Contributor Dashboard, Milestone/Evidence, Wallet, AI Risk Assessment, and Transaction History.
+    \item A Python Flask backend exposing REST APIs for campaign metadata, ML prediction, anomaly scoring, Agentic AI analysis, and KYC status.
+    \item A scikit-learn ML pipeline trained on a publicly available historical crowdfunding dataset (e.g., Kickstarter data from Kaggle), evaluated across three model families.
+    \item An Isolation Forest anomaly detection module returning a risk signal per campaign.
+    \item Four Agentic AI agents implemented in Python using an LLM API (NVIDIA Nemotron or equivalent), returning structured JSON outputs.
+    \item A mock KYC module that simulates identity verification without storing real identity documents.
+    \item A Solidity smart contract deployed to the Ethereum Sepolia testnet enforcing: hard cap (20 ETH), escrow, four-tranche milestone release, partial refunds, and access control.
+    \item MetaMask wallet integration via Ethers.js v6.
+    \item End-to-end testing covering at least 50 transactions on Sepolia, with all results auditable on Etherscan.
+    \item A research paper draft structured for potential submission to an academic venue.
+\end{itemize}
+
+\section{Out of Scope}
+
+\begin{itemize}
+    \item Production-scale deployment or mainnet Ethereum usage.
+    \item Guaranteed fraud prevention or investment advice.
+    \item Storage of real KYC documents (Aadhaar, PAN) on-chain or in any database.
+    \item Automatic physical-world milestone verification without human involvement.
+    \item Direct LLM control of financial transactions or private-key management.
+    \item Support for blockchains other than Ethereum Sepolia.
+    \item Legal compliance for a production crowdfunding product.
+\end{itemize}
+
+\section{System Boundary}
+
+The system boundary of TrustBridge encompasses: (a) the React frontend running in the contributor/creator browser; (b) the Flask backend and ML pipeline running on a local or cloud server; (c) the Agentic AI agents calling an external LLM API; (d) the Solidity smart contract running on the Sepolia testnet; and (e) the off-chain SQLite database storing campaign metadata, KYC status, and AI analysis outputs. The blockchain itself and the MetaMask wallet are external dependencies outside the system boundary.
