@@ -1,4 +1,4 @@
-export const CONTRACT_ADDRESS = "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43";
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "0x7c49bCc4A869480Bf3BAd72acf826667066c58d2";
 
 export const CONTRACT_ABI = [
   "function minGoal() view returns (uint256)",
@@ -31,4 +31,3 @@ export const CONTRACT_ABI = [
   "event TrancheWithdrawn(address indexed creator, uint8 indexed index, uint256 amount)",
   "event ContributorRefundIssued(address indexed contributor, uint256 amount)"
 ];
-

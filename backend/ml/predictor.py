@@ -11,7 +11,8 @@ CATEGORY_MAP = {
     "DeFi": 1,
     "Infrastructure": 2,
     "Social": 3,
-    "GreenTech": 4
+    "GreenTech": 4,
+    "Other": 5
 }
 
 def extract_features(campaign_dict):
@@ -21,8 +22,8 @@ def extract_features(campaign_dict):
     """
     goal_eth = float(campaign_dict.get("goal_eth", 10.0))
     duration_days = int(campaign_dict.get("duration_days", 30))
-    category = campaign_dict.get("category", "AI/ML")
-    category_code = CATEGORY_MAP.get(category, 0)
+    category = campaign_dict.get("category", "Other")
+    category_code = CATEGORY_MAP.get(category, 5)
     title = campaign_dict.get("title", "")
     description = campaign_dict.get("description", "")
     title_len = len(title)
@@ -40,8 +41,10 @@ def extract_features(campaign_dict):
 
 def predict_success(campaign_dict):
     if not os.path.exists(CLASSIFIER_PATH):
-        # Fallback heuristic if models not yet trained
-        return 0.82
+        raise FileNotFoundError(
+            f"Trained classifier artifact missing at '{CLASSIFIER_PATH}'. "
+            "Execute 'python backend/ml/train.py' to generate calibrated model."
+        )
     clf = joblib.load(CLASSIFIER_PATH)
     X = extract_features(campaign_dict)
     prob = float(clf.predict_proba(X)[0][1])
@@ -49,7 +52,10 @@ def predict_success(campaign_dict):
 
 def detect_risk(campaign_dict):
     if not os.path.exists(ANOMALY_PATH):
-        return {"anomaly_score": 0.12, "risk_tier": "LOW"}
+        raise FileNotFoundError(
+            f"Trained anomaly detector artifact missing at '{ANOMALY_PATH}'. "
+            "Execute 'python backend/ml/train.py' to generate detector."
+        )
     iso = joblib.load(ANOMALY_PATH)
     X = extract_features(campaign_dict)
     score = float(iso.decision_function(X)[0])

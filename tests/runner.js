@@ -21,27 +21,28 @@ import { runCrossFeatureInteractionTests } from './tier3_interactions/cross_feat
 import { runRealWorldWorkloadTests } from './tier4_scenarios/real_world_workloads.test.js';
 
 const suites = [
-  { tier: 'Tier 1: Feature Coverage', name: 'Theme Toggle (Groww Light / Binance Dark)', fn: runThemeToggleTests },
-  { tier: 'Tier 1: Feature Coverage', name: '6 Core Navigation Routes & Zero Blank Screens', fn: runNavigationRoutesTests },
-  { tier: 'Tier 1: Feature Coverage', name: 'Escrow Contribution & Headroom Tracking', fn: runEscrowContributionTests },
-  { tier: 'Tier 1: Feature Coverage', name: '4-Tranche Sequential Milestone Stepper', fn: runFourTrancheStepperTests },
-  { tier: 'Tier 1: Feature Coverage', name: 'AI Risk Telemetry & Mandatory Advisory Disclaimer', fn: runAiRiskTelemetryTests },
-  { tier: 'Tier 1: Feature Coverage', name: 'MetaMask Sepolia Live Synchronization', fn: runMetaMaskSepoliaSyncTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: 'Theme Toggle (Groww Light / Binance Dark)', fn: runThemeToggleTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: '11 Mounted Navigation Views (ViewStateController)', fn: runNavigationRoutesTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: 'Escrow Contribution & Headroom Simulator', fn: runEscrowContributionTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: '4-Tranche Milestone Stepper Simulator', fn: runFourTrancheStepperTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: 'AI Risk Telemetry & Mandatory Advisory Disclaimer', fn: runAiRiskTelemetryTests },
+  { tier: 'UI Tier 1: In-Process Feature Simulators', name: 'MetaMask Sepolia State Sync Simulator', fn: runMetaMaskSepoliaSyncTests },
 
-  { tier: 'Tier 2: Boundary & Corner Cases', name: '20 ETH Hard Cap Headroom Invariants', fn: runHardCapHeadroomTests },
-  { tier: 'Tier 2: Boundary & Corner Cases', name: '10 ETH Minimum Goal Threshold & Refund Guarantees', fn: runMinGoalThresholdTests },
-  { tier: 'Tier 2: Boundary & Corner Cases', name: 'In-Block Excess-Refund Split Calculation', fn: runExcessRefundSplitTests },
-  { tier: 'Tier 2: Boundary & Corner Cases', name: 'Milestone Submission 1-Retry Grace Period Limit', fn: runMilestoneRetryLimitTests },
+  { tier: 'Oracle Tier 2: Specification Checks', name: '20 ETH Hard Cap Headroom Invariants', fn: runHardCapHeadroomTests },
+  { tier: 'Oracle Tier 2: Specification Checks', name: '10 ETH Minimum Goal Threshold & Refund Guarantees', fn: runMinGoalThresholdTests },
+  { tier: 'Oracle Tier 2: Specification Checks', name: 'In-Block Excess-Refund Split Calculation', fn: runExcessRefundSplitTests },
+  { tier: 'Oracle Tier 2: Specification Checks', name: 'Milestone Submission 1-Retry Grace Period Limit', fn: runMilestoneRetryLimitTests },
 
-  { tier: 'Tier 3: Cross-Feature Interactions', name: 'Pairwise Integration & State Preservation', fn: runCrossFeatureInteractionTests },
-  { tier: 'Tier 4: Real-World Workloads', name: 'Full Lifecycle Scenarios & Escrow Settling', fn: runRealWorldWorkloadTests },
+  { tier: 'Oracle Tier 3: Cross-Feature Interactions', name: 'Pairwise Integration & State Preservation', fn: runCrossFeatureInteractionTests },
+  { tier: 'Oracle Tier 4: Client Scenarios', name: 'Full Lifecycle Client Workflow Simulation', fn: runRealWorldWorkloadTests },
 ];
 
 async function main() {
   const startTime = Date.now();
   console.log('================================================================');
-  console.log('       TrustBridge E2E Comprehensive Test Suite Runner          ');
-  console.log('   Opaque-Box Requirement-Driven Testing (Tiers 1, 2, 3, 4)     ');
+  console.log('    TrustBridge Client & In-Process State Simulation Runner     ');
+  console.log('  UI Specification & In-Process Sanity Checks (Tiers 1, 2, 3, 4)');
+  console.log('  NOTE: For real Solidity EVM on-chain tests: npx hardhat test  ');
   console.log('================================================================\n');
 
   let totalTests = 0;

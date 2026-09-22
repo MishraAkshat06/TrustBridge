@@ -1,0 +1,17 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "address": "0x7c49bCc4A869480Bf3BAd72acf826667066c58d2",
+  "transactionHash": "0xb79ff43f84190653504b230d0f75389f9fc2172286473a4620025caf1f6d7c4e",
+  "blockNumber": 11746166,
+  "deployer": "0xEf7A83468D2152718465D9143E3615ab9189D5f9",
+  "constructorArguments": [
+    "0xEf7A83468D2152718465D9143E3615ab9189D5f9",
+    2592000,
+    "Architecture & Prototype Specification",
+    "Testnet Launch & Contract Audits",
+    "Security Verification & Zero-Leakage ML",
+    "Production Readiness & System Handover"
+  ],
+  "timestamp": "2026-09-20T19:24:39.944Z"
+}

@@ -25,11 +25,10 @@ export default function WalletManagement() {
     setTimeout(() => setIsRefreshing(false), 800);
   }
 
-  // Bind live activities, or fallback to mock items if activities empty
+  // Bind live activities, or fallback to real verified Sepolia receipts
   const txList = activities.length > 0 ? activities : [
-    { id: 1, txHash: '0x8f2d1e9a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e', type: 'in', event: 'ContributionReceived', amount: 0.5, time: '2m ago', blockNumber: 5932014 },
-    { id: 2, txHash: '0x3c7e4b01a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b5a6f7e8d9', type: 'in', event: 'ContributionReceived', amount: 1.0, time: '12m ago', blockNumber: 5931890 },
-    { id: 3, txHash: '0x1a8fe829c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0', type: 'out', event: 'ExcessRefundIssued', amount: 0.25, time: '1h ago', blockNumber: 5928430 }
+    { id: 1, txHash: '0xcffdd3ccb9165d105b4d4f8aa0f5ac23b6903a022329885fd8d0f5da4f0c41dd', type: 'in', event: 'ContributionReceived', amount: 0.001, time: 'Phase 5 Validation', blockNumber: 11746227 },
+    { id: 2, txHash: '0xb79ff43f84190653504b230d0f75389f9fc2172286473a4620025caf1f6d7c4e', type: 'in', event: 'ContractDeployed', amount: 0, time: 'Phase 4 Deployment', blockNumber: 11746166 }
   ];
 
   return (

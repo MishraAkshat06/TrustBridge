@@ -1,43 +1,84 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { BrowserProvider, formatEther, parseEther } from 'ethers';
+import { BrowserProvider, JsonRpcProvider, Contract, formatEther, parseEther } from 'ethers';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../contractConfig';
 import { MOCK_CAMPAIGNS } from '../mockData';
-import { fetchCampaigns, createCampaignApi } from '../services/api';
+import { fetchCampaigns, createCampaignApi, predictSuccess, assessRisk } from '../services/api';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 
 const AppContext = createContext();
 
 const SEPOLIA_CHAIN_ID = 11155111;
 const SEPOLIA_CHAIN_HEX = '0xaa36a7';
-const SANDBOX_FALLBACK_WALLET = '0x7B2aB43a8B4512CdEf8798C3953508495a024Fa1';
+const SEPOLIA_RPC = 'https://sepolia.infura.io/v3/afb2b386de5d4cbd9036fa43056f3e9b';
+
+const STATE_MAP = ['ACTIVE', 'FUNDED', 'IN_PROGRESS', 'COMPLETED', 'FAILED', 'REFUNDABLE'];
+const MILESTONE_STATE_MAP = ['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'];
+
+export function getReadonlyContract() {
+  const provider = new JsonRpcProvider(SEPOLIA_RPC);
+  return new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+}
+
+export async function getSignerContract() {
+  if (typeof window === 'undefined' || !window.ethereum) {
+    throw new Error('MetaMask or Web3 wallet not detected. Please install MetaMask to transact on Sepolia.');
+  }
+  const provider = new BrowserProvider(window.ethereum);
+  const signer = await provider.getSigner();
+  return new Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+}
 
 export function AppProvider({ children }) {
-  // Navigation / views: 'Landing', 'Auth', 'Campaign', 'Explore', 'Create', 'Contributions', 'Verifier', 'Docs', 'Wallet', 'AiRisk', 'Ledger'
   const [currentView, setCurrentView] = useState('Landing');
   const [account, setAccount] = useState('');
   const [activeTab, setActiveTab] = useState('Overview');
   const [campaigns, setCampaigns] = useState(MOCK_CAMPAIGNS);
-  const [activeCampaignId, setActiveCampaignId] = useState('1');
+  const [activeCampaignId, setActiveCampaignId] = useState('trustbridge-ai-01');
 
-  const [user, setUser] = useState(null); // { name, email, role: 'Creator' | 'Contributor' | 'Verifier', kycStatus: 'Verified' }
-  const [balance, setBalance] = useState('4.8215');
+  const [user, setUser] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('trustbridge_user_session');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return null;
+  });
+  const [balance, setBalance] = useState('0.0000');
   const [isSepolia, setIsSepolia] = useState(true);
   const userRole = user?.role || 'Contributor';
 
-  // Global activity history
+  // Real verified activities
   const [activities, setActivities] = useState([
-    { id: 1, txHash: '0x8f2d1e9a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e', blockNumber: 5932014, addr: '0x5c3...9a2f', action: 'Contributed 0.50 ETH', event: 'ContributionReceived', time: '2m ago', type: 'in', amount: 0.5, campaignId: '1' },
-    { id: 2, txHash: '0x3c7e4b01a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b5a6f7e8d9', blockNumber: 5931890, addr: '0x1d7...3e9b', action: 'Contributed 1.00 ETH', event: 'ContributionReceived', time: '12m ago', type: 'in', amount: 1.0, campaignId: '1' },
-    { id: 3, txHash: '0x1a8fe829c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0', blockNumber: 5928430, addr: '0x9a4...7c1d', action: 'In-Block Excess Refund 0.25 ETH', event: 'ExcessRefundIssued', time: '1h ago', type: 'out', amount: 0.25, campaignId: '1' },
-    { id: 4, txHash: '0x7e8d9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e', blockNumber: 5925102, addr: '0x3f8...6b2e', action: 'Contributed 2.00 ETH', event: 'ContributionReceived', time: '2h ago', type: 'in', amount: 2.0, campaignId: '2' },
+    {
+      id: 1,
+      txHash: '0xb79ff43f84190653504b230d0f75389f9fc2172286473a4620025caf1f6d7c4e',
+      blockNumber: 11746166,
+      addr: '0xEf7A...D5f9',
+      action: 'Contract Deployed on Sepolia',
+      event: 'ContractDeployed',
+      time: 'Phase 4',
+      type: 'in',
+      amount: 0,
+      campaignId: 'trustbridge-ai-01'
+    },
+    {
+      id: 2,
+      txHash: '0xcffdd3ccb9165d105b4d4f8aa0f5ac23b6903a022329885fd8d0f5da4f0c41dd',
+      blockNumber: 11746227,
+      addr: '0xEf7A...D5f9',
+      action: 'Contributed 0.001 ETH',
+      event: 'ContributionReceived',
+      time: 'Phase 5 Validation',
+      type: 'in',
+      amount: 0.001,
+      campaignId: 'trustbridge-ai-01'
+    }
   ]);
 
-  // User personal contributions
-  const [myContributions, setMyContributions] = useState([
-    { campaignId: '1', title: 'AuraMesh: Decentralized IoT Edge Sensing Node', amount: 1.5, status: 'Escrowed', canRefund: true },
-    { campaignId: '2', title: 'EcoPulse: Modular Biogas Digester Telemetry', amount: 0.5, status: 'Escrowed', canRefund: true }
-  ]);
+  const [myContributions, setMyContributions] = useState([]);
 
-  const activeCampaign = campaigns.find(c => c.id === activeCampaignId) || campaigns[0];
+  const activeCampaign = campaigns.find(c => c.id === activeCampaignId) || campaigns[0] || MOCK_CAMPAIGNS[0];
 
   // Refresh balance from on-chain provider
   const refreshBalance = useCallback(async (targetAccount, prov) => {
@@ -47,9 +88,7 @@ export function AppProvider({ children }) {
       if (typeof window !== 'undefined' && window.ethereum) {
         const p = prov || new BrowserProvider(window.ethereum);
         const balWei = await p.getBalance(acc);
-        const ethStr = formatEther(balWei);
-        const ethNum = parseFloat(ethStr);
-        // Formatted rounded to 4 decimals with BigInt precision
+        const ethNum = parseFloat(formatEther(balWei));
         setBalance(ethNum.toFixed(4));
       }
     } catch (err) {
@@ -76,7 +115,7 @@ export function AppProvider({ children }) {
               chainId: SEPOLIA_CHAIN_HEX,
               chainName: 'Ethereum Sepolia Testnet',
               nativeCurrency: { name: 'Sepolia Ether', symbol: 'SEP', decimals: 18 },
-              rpcUrls: ['https://rpc.sepolia.org', 'https://ethereum-sepolia-rpc.publicnode.com'],
+              rpcUrls: ['https://sepolia.infura.io/v3/afb2b386de5d4cbd9036fa43056f3e9b', 'https://rpc.sepolia.org'],
               blockExplorerUrls: ['https://sepolia.etherscan.io']
             }]
           });
@@ -92,268 +131,228 @@ export function AppProvider({ children }) {
     }
   }, []);
 
-  // Connect wallet pipeline
-  const connectWallet = useCallback(async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      try {
-        const provider = new BrowserProvider(window.ethereum);
-        const accounts = await provider.send('eth_requestAccounts', []);
-        if (accounts && accounts.length > 0) {
-          const selectedAccount = accounts[0];
-          setAccount(selectedAccount);
+  // Sync real on-chain data for live contract
+  const syncOnChainData = useCallback(async () => {
+    try {
+      const roContract = getReadonlyContract();
+      const [rawRaised, rawWithdrawn, rawState, rawIdx] = await Promise.all([
+        roContract.totalRaised(),
+        roContract.totalWithdrawn(),
+        roContract.state(),
+        roContract.currentMilestoneIndex()
+      ]);
 
-          // Check network
-          const network = await provider.getNetwork();
-          const chainId = Number(network.chainId);
-          const isSep = chainId === SEPOLIA_CHAIN_ID;
-          setIsSepolia(isSep);
-          if (!isSep) {
-            await switchNetwork();
-          }
+      const onChainRaised = parseFloat(formatEther(rawRaised));
+      const onChainWithdrawn = parseFloat(formatEther(rawWithdrawn));
+      const onChainState = STATE_MAP[Number(rawState)] || 'ACTIVE';
+      const onChainMilestoneIndex = Number(rawIdx);
 
-          // Fetch balance
-          await refreshBalance(selectedAccount, provider);
-
-          if (!user) {
-            setUser({
-              name: `${selectedAccount.slice(0, 6)}...${selectedAccount.slice(-4)}`,
-              email: 'user@sepolia.eth',
-              role: 'Contributor',
-              kycStatus: 'Verified'
-            });
-          }
-          return;
+      // Fetch on-chain milestones
+      const onChainMilestones = [];
+      for (let i = 0; i < 4; i++) {
+        try {
+          const m = await roContract.getMilestone(i);
+          onChainMilestones.push({
+            id: i + 1,
+            title: m.title || `Tranche ${i + 1}`,
+            percentage: Math.round(Number(m.trancheBps) / 100),
+            trancheBps: Number(m.trancheBps),
+            status: MILESTONE_STATE_MAP[Number(m.milestoneState)] || 'PENDING',
+            attempts: Number(m.submissionAttempts),
+            trancheClaimed: m.trancheClaimed,
+            evidence: m.evidenceIpfsHash || ''
+          });
+        } catch (e) {
+          console.warn(`Could not read milestone ${i}:`, e);
         }
-      } catch (err) {
-        console.warn('MetaMask connection error or cancelled:', err);
       }
+
+      setCampaigns(prev => prev.map(c => {
+        if (c.contract_address?.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() || c.id === 'trustbridge-ai-01') {
+          return {
+            ...c,
+            contract_address: CONTRACT_ADDRESS,
+            totalRaised: onChainRaised,
+            totalWithdrawn: onChainWithdrawn,
+            state: onChainState,
+            currentMilestoneIndex: onChainMilestoneIndex,
+            milestones: onChainMilestones.length === 4 ? onChainMilestones : c.milestones
+          };
+        }
+        return c;
+      }));
+
+      // If user account is connected, query their on-chain contribution
+      if (account && account.startsWith('0x')) {
+        const myWei = await roContract.contributions(account);
+        const myAmount = parseFloat(formatEther(myWei));
+        if (myAmount > 0) {
+          setMyContributions(prev => {
+            const filtered = prev.filter(item => item.campaignId !== 'trustbridge-ai-01');
+            return [...filtered, {
+              campaignId: 'trustbridge-ai-01',
+              title: 'Autonomous Multi-Agent Escrow Protocol',
+              amount: myAmount,
+              status: 'Escrowed On-Chain',
+              canRefund: onChainState === 'FAILED' || onChainState === 'REFUNDABLE'
+            }];
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('On-chain read synchronization note:', err.message);
     }
+  }, [account]);
 
-    // Fallback to Sandbox testnet wallet if MetaMask absent or connection failed
-    const fallback = SANDBOX_FALLBACK_WALLET;
-    setAccount(fallback);
-    setBalance('4.8215');
-    setIsSepolia(true);
-    if (!user) {
-      setUser({
-        name: 'Sandbox Backer',
-        email: 'demo@trustbridge.io',
-        role: 'Contributor',
-        kycStatus: 'Verified'
-      });
-    }
-  }, [refreshBalance, switchNetwork, user]);
-
-  function disconnectWallet() {
-    setAccount('');
-    setBalance('0.0000');
-  }
-
-  // MetaMask event listeners (accountsChanged & chainChanged)
+  // Load campaigns from backend and sync on-chain data
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      const handleAccountsChanged = (accounts) => {
-        if (accounts && accounts.length > 0) {
-          const newAcc = accounts[0];
-          setAccount(newAcc);
-          refreshBalance(newAcc);
-        } else {
-          disconnectWallet();
-        }
-      };
-
-      const handleChainChanged = (chainIdHex) => {
-        const chainId = typeof chainIdHex === 'string' ? parseInt(chainIdHex, 16) : Number(chainIdHex);
-        const isSep = chainId === SEPOLIA_CHAIN_ID;
-        setIsSepolia(isSep);
-        if (account) {
-          refreshBalance(account);
-        }
-      };
-
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      return () => {
-        if (window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-          window.ethereum.removeListener('chainChanged', handleChainChanged);
-        }
-      };
-    }
-  }, [account, refreshBalance]);
-
-  // Load backend campaigns on mount
-  useEffect(() => {
-    async function loadBackendCampaigns() {
+    async function loadInitialData() {
       try {
         const data = await fetchCampaigns();
         if (data && data.length > 0) {
-          const mapped = data.map((c) => ({
-            id: c.id,
-            title: c.title,
-            category: c.category || 'AI/ML',
-            verified: true,
-            creator: c.creator_address || '0x3Fa8B43a8B4512CdEf8798C3953508495a02241F',
-            summary: c.description,
-            goal: c.goal_eth || 10.0,
-            hardCap: c.hard_cap_eth || 20.0,
-            totalRaised: Number((c.goal_eth * 0.725).toFixed(2)),
-            totalWithdrawn: 0.0,
-            deadlineDays: 30,
-            mlScore: 92,
-            riskLevel: 'LOW',
-            state: 'ACTIVE',
-            riskDetails: 'Structural evaluation passed. Realistic roadmap deliverables with balanced tranches.',
-            milestones: (c.milestones && c.milestones.length > 0) 
-              ? c.milestones.map((m, mIdx) => ({
-                  id: mIdx + 1,
-                  title: m.title || `Tranche ${mIdx + 1}`,
-                  percentage: Math.round((m.tranche_bps || 2500) / 100),
-                  trancheBps: m.tranche_bps || (mIdx === 0 ? 2000 : mIdx === 3 ? 3000 : 2500),
-                  status: m.status || (mIdx === 0 ? 'APPROVED' : mIdx === 1 ? 'UNDER_REVIEW' : 'PENDING'),
-                  attempts: 0,
-                  trancheClaimed: false,
-                  evidence: ''
-                }))
-              : [
-                  { id: 1, title: 'Tranche 1: Prototype Architecture & BOM', percentage: 20, trancheBps: 2000, status: 'APPROVED', attempts: 0, trancheClaimed: false, evidence: '' },
-                  { id: 2, title: 'Tranche 2: PCB Fabrication & Bench Testing', percentage: 25, trancheBps: 2500, status: 'UNDER_REVIEW', attempts: 1, trancheClaimed: false, evidence: 'https://demo.auramesh.io/bench-v2' },
-                  { id: 3, title: 'Tranche 3: Field Testing & Gateway Integration', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
-                  { id: 4, title: 'Tranche 4: Volume Production & SDK Release', percentage: 30, trancheBps: 3000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' }
-                ]
+          const mapped = await Promise.all(data.map(async (c) => {
+            let mlProb = 0.7040;
+            let riskTier = 'LOW';
+            try {
+              const pred = await predictSuccess({ goal_eth: c.goal_eth, category: c.category, title: c.title, description: c.description });
+              if (pred && pred.success_probability) mlProb = pred.success_probability;
+              const risk = await assessRisk({ goal_eth: c.goal_eth, category: c.category, description: c.description });
+              if (risk && risk.anomaly && risk.anomaly.risk_tier) riskTier = risk.anomaly.risk_tier;
+            } catch {}
+
+            return {
+              id: c.id,
+              title: c.title,
+              category: c.category || 'AI/ML',
+              verified: true,
+              creator: c.creator_address || '0xEf7A83468D2152718465D9143E3615ab9189D5f9',
+              contract_address: c.contract_address || CONTRACT_ADDRESS,
+              summary: c.description,
+              goal: c.goal_eth || 10.0,
+              hardCap: c.hard_cap_eth || 20.0,
+              totalRaised: 0.0,
+              totalWithdrawn: 0.0,
+              deadlineDays: 30,
+              mlScore: Math.round(mlProb * 100),
+              riskLevel: riskTier,
+              state: 'ACTIVE',
+              riskDetails: 'Strict zero-leakage model evaluation. Balanced 4-tranche milestones.',
+              milestones: (c.milestones && c.milestones.length > 0)
+                ? c.milestones.map((m, mIdx) => ({
+                    id: mIdx + 1,
+                    title: m.title || `Tranche ${mIdx + 1}`,
+                    percentage: Math.round((m.tranche_bps || 2500) / 100),
+                    trancheBps: m.tranche_bps || (mIdx === 0 ? 2000 : mIdx === 3 ? 3000 : 2500),
+                    status: m.status || (mIdx === 0 ? 'APPROVED' : 'PENDING'),
+                    attempts: 0,
+                    trancheClaimed: false,
+                    evidence: ''
+                  }))
+                : [
+                    { id: 1, title: 'Architecture & Prototype Review', percentage: 20, trancheBps: 2000, status: 'APPROVED', attempts: 0, trancheClaimed: false, evidence: '' },
+                    { id: 2, title: 'Smart Contract Sepolia Audits', percentage: 25, trancheBps: 2500, status: 'UNDER_REVIEW', attempts: 0, trancheClaimed: false, evidence: '' },
+                    { id: 3, title: 'Agentic Verification Pipeline', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
+                    { id: 4, title: 'Production Readiness & Handover', percentage: 30, trancheBps: 3000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' }
+                  ]
+            };
           }));
+
           setCampaigns(mapped);
           if (mapped[0]) setActiveCampaignId(mapped[0].id);
         }
       } catch (err) {
-        console.warn('Backend campaigns fetch error:', err);
+        console.warn('Initial campaign load warning:', err);
       }
+      await syncOnChainData();
     }
-    loadBackendCampaigns();
-  }, []);
+    loadInitialData();
+  }, [syncOnChainData]);
 
-  // Rehydrate authenticated user session on mount
-  useEffect(() => {
+  // Connect wallet
+  const connectWallet = useCallback(async () => {
+    if (typeof window === 'undefined' || !window.ethereum) {
+      alert('MetaMask is not installed. Please install MetaMask to interact with Sepolia testnet.');
+      return;
+    }
     try {
-      const stored = localStorage.getItem('trustbridge_user_session');
-      if (stored) {
-        setUser(JSON.parse(stored));
+      const provider = new BrowserProvider(window.ethereum);
+      const accounts = await provider.send('eth_requestAccounts', []);
+      if (accounts.length > 0) {
+        setAccount(accounts[0]);
+        const network = await provider.getNetwork();
+        const onSepolia = Number(network.chainId) === SEPOLIA_CHAIN_ID;
+        setIsSepolia(onSepolia);
+        if (!onSepolia) {
+          await switchNetwork();
+        }
+        await refreshBalance(accounts[0], provider);
+        await syncOnChainData();
       }
-    } catch (e) {
-      console.warn('Failed to rehydrate user session:', e);
+    } catch (err) {
+      console.error('Wallet connection failed:', err);
     }
-  }, []);
+  }, [refreshBalance, switchNetwork, syncOnChainData]);
 
-  function loginOrRegister(userData) {
-    const sessionUser = {
-      name: userData?.name || 'Anonymous Backer',
-      email: userData?.email || 'backer@trustbridge.io',
-      role: userData?.role || 'Contributor',
-      avatar: userData?.avatar || (userData?.name ? userData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'TB'),
-      kycStatus: userData?.kycStatus || 'Google SSO Verified',
-      authMethod: userData?.authMethod || (userData?.avatar ? 'google_sso' : 'credentials'),
-      timestamp: Date.now()
-    };
-    setUser(sessionUser);
-    try {
-      localStorage.setItem('trustbridge_user_session', JSON.stringify(sessionUser));
-    } catch (e) {
-      console.warn('Could not persist user session to localStorage:', e);
-    }
-    if (!account) {
-      setAccount(SANDBOX_FALLBACK_WALLET);
-    }
-    setCurrentView('Campaign');
-    return sessionUser;
-  }
-
-  function logout() {
-    setUser(null);
-    try {
-      localStorage.removeItem('trustbridge_user_session');
-    } catch (e) {
-      console.warn('Could not remove user session from localStorage:', e);
-    }
+  const disconnectWallet = useCallback(() => {
     setAccount('');
-    setCurrentView('Landing');
-  }
+    setBalance('0.0000');
+  }, []);
 
-  // Real-time dynamic gas estimator
-  function estimateGas(priority = 'medium', baseGwei = 25) {
-    const BASE_GAS_LIMIT = 48000;
-    const priorityMultipliers = { low: 1.0, medium: 1.25, fast: 1.5 };
-    const mult = priorityMultipliers[priority] || 1.25;
-    const effectiveGwei = baseGwei * mult;
-    const totalGwei = BASE_GAS_LIMIT * effectiveGwei;
-    const feeEth = Number((totalGwei / 1e9).toFixed(6));
+  function estimateGas(priority = 'medium') {
+    const mult = priority === 'fast' ? 1.5 : (priority === 'low' ? 1.0 : 1.25);
+    const gasUnits = 74243;
+    const baseGwei = 25 * mult;
+    const feeEth = Number(((gasUnits * baseGwei) / 1e9).toFixed(6));
     const feeUsd = Number((feeEth * 3200).toFixed(2));
-    return {
-      gasUnits: BASE_GAS_LIMIT,
-      effectiveGwei,
-      feeEth,
-      feeUsd,
-      priority
-    };
+    return { gasUnits, effectiveGwei: baseGwei, feeEth, feeUsd, priority };
   }
 
-  // Core Escrow Contribution Logic with strict 20 ETH hard cap & 10 ETH min goal
-  function contributeToCampaign(campaignId, amountEth) {
+  // Real On-Chain Contribution
+  async function contributeToCampaign(campaignId, amountEth) {
     const val = parseFloat(amountEth);
     if (isNaN(val) || val <= 0) return { success: false, msg: 'Enter valid ETH amount' };
 
-    let accepted = 0;
-    let refunded = 0;
-    let updatedCampaign = null;
+    if (!account) {
+      await connectWallet();
+      if (!account) return { success: false, msg: 'Please connect your MetaMask wallet.' };
+    }
 
-    const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const blockNumber = 5932000 + Math.floor(Math.random() * 1000);
+    if (!isSepolia) {
+      const switched = await switchNetwork();
+      if (!switched) return { success: false, msg: 'Please switch network to Sepolia Testnet.' };
+    }
 
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const hardCap = c.hardCap || 20.0;
-        const minGoal = c.goal || 10.0;
-        const remaining = Math.max(0, hardCap - c.totalRaised);
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.contribute({ value: parseEther(amountEth.toString()) });
+      const receipt = await tx.wait(1);
 
-        accepted = Number(Math.min(val, remaining).toFixed(4));
-        refunded = Number(Math.max(0, val - accepted).toFixed(4));
-        const newTotal = Number((c.totalRaised + accepted).toFixed(4));
+      let accepted = val;
+      let refunded = 0;
 
-        // Milestones: automatic unlock of Tranche 1 (20%) when campaign reaches minGoal (10 ETH)
-        let updatedMilestones = (c.milestones || []).map((m, idx) => {
-          if (idx === 0 && newTotal >= minGoal && m.status === 'PENDING') {
-            return { ...m, status: 'APPROVED' };
+      for (const log of receipt.logs) {
+        try {
+          const parsed = contract.interface.parseLog(log);
+          if (parsed && parsed.name === 'ExcessRefundIssued') {
+            refunded = parseFloat(formatEther(parsed.args.amount));
+            accepted = val - refunded;
           }
-          return m;
-        });
-
-        const newState = newTotal >= hardCap 
-          ? 'FUNDED' 
-          : (newTotal >= minGoal ? 'IN_PROGRESS' : (c.state || 'ACTIVE'));
-
-        updatedCampaign = {
-          ...c,
-          totalRaised: newTotal,
-          state: newState,
-          milestones: updatedMilestones
-        };
-        return updatedCampaign;
+        } catch {}
       }
-      return c;
-    }));
 
-    const actorDisplay = account 
-      ? `${account.slice(0, 6)}...${account.slice(-4)}` 
-      : '0x7B2a...4Fa1';
+      await syncOnChainData();
+      await refreshBalance(account);
 
-    if (accepted > 0) {
+      const actorDisplay = `${account.slice(0, 6)}...${account.slice(-4)}`;
       const contribAct = {
         id: Date.now(),
-        txHash,
-        blockNumber,
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
         addr: actorDisplay,
-        action: `Contributed ${accepted.toFixed(4)} ETH`,
-        event: 'ContributionReceived',
+        action: refunded > 0 
+          ? `Contributed ${accepted.toFixed(4)} ETH (${refunded.toFixed(4)} ETH excess refunded)`
+          : `Contributed ${accepted.toFixed(4)} ETH`,
+        event: refunded > 0 ? 'ExcessRefundIssued' : 'ContributionReceived',
         time: 'Just now',
         type: 'in',
         amount: accepted,
@@ -361,265 +360,175 @@ export function AppProvider({ children }) {
       };
       setActivities(prev => [contribAct, ...prev]);
 
-      setMyContributions(prev => {
-        const exist = prev.find(item => item.campaignId === campaignId);
-        if (exist) {
-          return prev.map(item => item.campaignId === campaignId ? { ...item, amount: Number((item.amount + accepted).toFixed(4)) } : item);
-        }
-        return [...prev, { campaignId, title: updatedCampaign?.title || 'Escrow Vault Hub', amount: accepted, status: 'Escrowed', canRefund: true }];
-      });
-    }
-
-    if (refunded > 0) {
-      const refundAct = {
-        id: Date.now() + 1,
-        txHash,
-        blockNumber,
-        addr: actorDisplay,
-        action: `In-Block Excess Refund ${refunded.toFixed(4)} ETH`,
-        event: 'ExcessRefundIssued',
-        time: 'Just now',
-        type: 'out',
-        amount: refunded,
-        campaignId
+      return {
+        success: true,
+        accepted,
+        refunded,
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        isExcessRefund: refunded > 0,
+        msg: refunded > 0
+          ? `Confirmed in block ${receipt.blockNumber}! Accepted ${accepted.toFixed(4)} ETH. In-block excess refund issued: ${refunded.toFixed(4)} ETH.`
+          : `Confirmed on Sepolia in block ${receipt.blockNumber}! Contributed ${accepted.toFixed(4)} ETH.`
       };
-      setActivities(prev => [refundAct, ...prev]);
+    } catch (err) {
+      console.error('On-chain contribute error:', err);
+      const msg = err.reason || err.shortMessage || err.message || 'Transaction rejected on chain';
+      return { success: false, msg };
     }
-
-    return {
-      success: true,
-      accepted,
-      refunded,
-      txHash,
-      blockNumber,
-      isExcessRefund: refunded > 0,
-      msg: refunded > 0 
-        ? `Accepted ${accepted.toFixed(4)} ETH. In-block excess refunded ${refunded.toFixed(4)} ETH!`
-        : `Successfully contributed ${accepted.toFixed(4)} ETH!`
-    };
   }
 
-  // 4-Tranche Milestone Governance: Submit Evidence
-  function submitMilestoneEvidence(campaignId, milestoneId, evidenceData = '') {
-    const evidenceStr = typeof evidenceData === 'string' 
-      ? evidenceData 
-      : (evidenceData?.ipfsHash || evidenceData?.url || 'https://ipfs.io/ipfs/QmTrustBridgeProof');
+  // Real On-Chain Evidence Submission
+  async function submitMilestoneEvidence(campaignId, milestoneId, evidenceData = '') {
+    const evidenceStr = typeof evidenceData === 'string'
+      ? evidenceData
+      : (evidenceData?.ipfsHash || evidenceData?.url || 'ipfs://QmTrustBridgeDeliverableEvidence');
 
-    let updatedMilestone = null;
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.submitMilestoneEvidence(evidenceStr);
+      const receipt = await tx.wait(1);
 
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const updatedMilestones = (c.milestones || []).map(m => {
-          if (m.id === milestoneId) {
-            const nextAttempts = (m.attempts || 0) + 1;
-            updatedMilestone = {
-              ...m,
-              status: 'UNDER_REVIEW',
-              attempts: nextAttempts,
-              evidence: evidenceStr
-            };
-            return updatedMilestone;
-          }
-          return m;
-        });
-        return { ...c, milestones: updatedMilestones };
-      }
-      return c;
-    }));
+      await syncOnChainData();
 
-    const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newAct = {
-      id: Date.now(),
-      txHash,
-      blockNumber: 5932020,
-      addr: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0xCreator...Auth',
-      action: `Submitted Evidence for Milestone #${milestoneId}`,
-      event: 'MilestoneSubmitted',
-      time: 'Just now',
-      type: 'in',
-      amount: 0,
-      campaignId
-    };
-    setActivities(prev => [newAct, ...prev]);
-    return { success: true, milestone: updatedMilestone };
-  }
-
-  // 4-Tranche Milestone Governance: Verifier Consensus Approval
-  function approveMilestone(campaignId, milestoneId) {
-    let allApproved = false;
-
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const updatedMilestones = (c.milestones || []).map(m => {
-          if (m.id === milestoneId) return { ...m, status: 'APPROVED' };
-          return m;
-        });
-        allApproved = updatedMilestones.every(m => m.status === 'APPROVED' || m.status === 'CLAIMED');
-        return {
-          ...c,
-          state: allApproved ? 'COMPLETED' : c.state,
-          milestones: updatedMilestones
-        };
-      }
-      return c;
-    }));
-
-    const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newAct = {
-      id: Date.now(),
-      txHash,
-      blockNumber: 5932035,
-      addr: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0xVerifier...Auth',
-      action: `Approved Milestone #${milestoneId} Tranche`,
-      event: 'MilestoneApproved',
-      time: 'Just now',
-      type: 'in',
-      amount: 0,
-      campaignId
-    };
-    setActivities(prev => [newAct, ...prev]);
-    return { success: true, allApproved };
-  }
-
-  // 4-Tranche Milestone Governance: Verifier Rejection with 1-Retry Grace Period
-  function rejectMilestone(campaignId, milestoneId, reason = 'Deliverables did not satisfy audit criteria') {
-    let isFinal = false;
-
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const updatedMilestones = (c.milestones || []).map(m => {
-          if (m.id === milestoneId) {
-            const attempts = m.attempts || 1;
-            isFinal = attempts >= 2; // max 2 attempts allowed (1 retry grace period)
-            return {
-              ...m,
-              status: isFinal ? 'FINAL_REJECTED' : 'REJECTED_RETRY',
-              attempts
-            };
-          }
-          return m;
-        });
-
-        return {
-          ...c,
-          state: isFinal ? 'REFUNDABLE' : c.state,
-          milestones: updatedMilestones
-        };
-      }
-      return c;
-    }));
-
-    const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newAct = {
-      id: Date.now(),
-      txHash,
-      blockNumber: 5932040,
-      addr: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0xVerifier...Auth',
-      action: isFinal 
-        ? `Final Rejection on Milestone #${milestoneId}: Escrow set to REFUNDABLE`
-        : `Rejected Milestone #${milestoneId}: Grace period retry granted`,
-      event: 'MilestoneRejected',
-      time: 'Just now',
-      type: 'out',
-      amount: 0,
-      campaignId
-    };
-    setActivities(prev => [newAct, ...prev]);
-    return { success: true, isFinal };
-  }
-
-  // Creator pull-payment withdrawal for approved tranche
-  function withdrawTranche(campaignId, milestoneId) {
-    let trancheAmount = 0;
-
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const updatedMilestones = (c.milestones || []).map(m => {
-          if (m.id === milestoneId && (m.status === 'APPROVED' || m.status === 'COMPLETED') && !m.trancheClaimed) {
-            trancheAmount = Number(((c.totalRaised * (m.percentage || 25)) / 100).toFixed(4));
-            return { ...m, trancheClaimed: true, status: 'CLAIMED' };
-          }
-          return m;
-        });
-        return {
-          ...c,
-          totalWithdrawn: Number(((c.totalWithdrawn || 0) + trancheAmount).toFixed(4)),
-          milestones: updatedMilestones
-        };
-      }
-      return c;
-    }));
-
-    if (trancheAmount > 0) {
-      const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
       const newAct = {
         id: Date.now(),
-        txHash,
-        blockNumber: 5932050,
-        addr: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0xCreator...Auth',
-        action: `Creator Withdrew Tranche #${milestoneId} (${trancheAmount.toFixed(4)} ETH)`,
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        addr: `${account.slice(0, 6)}...${account.slice(-4)}`,
+        action: `Submitted Evidence for Milestone #${milestoneId}`,
+        event: 'MilestoneSubmitted',
+        time: 'Just now',
+        type: 'in',
+        amount: 0,
+        campaignId
+      };
+      setActivities(prev => [newAct, ...prev]);
+      return { success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber };
+    } catch (err) {
+      console.error('Submit evidence failed:', err);
+      return { success: false, msg: err.reason || err.message || 'Submission failed' };
+    }
+  }
+
+  // Real On-Chain Verifier Approval
+  async function approveMilestone(campaignId, milestoneId) {
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.approveMilestone(Number(milestoneId) - 1);
+      const receipt = await tx.wait(1);
+
+      await syncOnChainData();
+
+      const newAct = {
+        id: Date.now(),
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        addr: `${account.slice(0, 6)}...${account.slice(-4)}`,
+        action: `Approved Milestone #${milestoneId} Tranche`,
+        event: 'MilestoneApproved',
+        time: 'Just now',
+        type: 'in',
+        amount: 0,
+        campaignId
+      };
+      setActivities(prev => [newAct, ...prev]);
+      return { success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber };
+    } catch (err) {
+      console.error('Approve milestone failed:', err);
+      return { success: false, msg: err.reason || err.message || 'Approval failed' };
+    }
+  }
+
+  // Real On-Chain Verifier Rejection
+  async function rejectMilestone(campaignId, milestoneId) {
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.rejectMilestone(Number(milestoneId) - 1);
+      const receipt = await tx.wait(1);
+
+      await syncOnChainData();
+
+      const newAct = {
+        id: Date.now(),
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        addr: `${account.slice(0, 6)}...${account.slice(-4)}`,
+        action: `Rejected Milestone #${milestoneId}`,
+        event: 'MilestoneRejected',
+        time: 'Just now',
+        type: 'out',
+        amount: 0,
+        campaignId
+      };
+      setActivities(prev => [newAct, ...prev]);
+      return { success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber };
+    } catch (err) {
+      console.error('Reject milestone failed:', err);
+      return { success: false, msg: err.reason || err.message || 'Rejection failed' };
+    }
+  }
+
+  // Real On-Chain Tranche Withdrawal
+  async function withdrawTranche(campaignId, milestoneId) {
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.withdrawTranche(Number(milestoneId) - 1);
+      const receipt = await tx.wait(1);
+
+      await syncOnChainData();
+      await refreshBalance(account);
+
+      const newAct = {
+        id: Date.now(),
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        addr: `${account.slice(0, 6)}...${account.slice(-4)}`,
+        action: `Creator Withdrew Tranche #${milestoneId}`,
         event: 'TrancheWithdrawn',
         time: 'Just now',
         type: 'out',
-        amount: trancheAmount,
+        amount: 0,
         campaignId
       };
       setActivities(prev => [newAct, ...prev]);
-      return { success: true, amount: trancheAmount, msg: `Withdrew ${trancheAmount.toFixed(4)} ETH tranche` };
+      return { success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber };
+    } catch (err) {
+      console.error('Withdraw tranche failed:', err);
+      return { success: false, msg: err.reason || err.message || 'Withdrawal failed' };
     }
-    return { success: false, msg: 'Tranche not approved or already withdrawn' };
   }
 
-  // Contributor pro-rata refund claim for FAILED or REFUNDABLE campaigns
-  function claimRefund(campaignId) {
-    const targetCamp = campaigns.find(c => c.id === campaignId);
-    const myContrib = myContributions.find(c => c.campaignId === campaignId);
+  // Real On-Chain Claim Refund
+  async function claimRefund(campaignId) {
+    try {
+      const contract = await getSignerContract();
+      const tx = await contract.claimRefund();
+      const receipt = await tx.wait(1);
 
-    if (!myContrib || myContrib.amount <= 0) {
-      return { success: false, msg: 'No contribution available to refund.' };
-    }
+      await syncOnChainData();
+      await refreshBalance(account);
 
-    const totalRaised = targetCamp?.totalRaised || 20.0;
-    const totalWithdrawn = targetCamp?.totalWithdrawn || 0.0;
-    
-    // Pro-rata mathematical settlement: contribution * (totalRaised - totalWithdrawn) / totalRaised
-    const refundRatio = totalRaised > 0 ? (totalRaised - totalWithdrawn) / totalRaised : 1.0;
-    const refundAmount = Number((myContrib.amount * refundRatio).toFixed(4));
-
-    setMyContributions(prev => prev.filter(c => c.campaignId !== campaignId));
-
-    if (refundAmount > 0) {
-      setCampaigns(prev => prev.map(c => {
-        if (c.id === campaignId) {
-          return { ...c, totalRaised: Math.max(0, Number((c.totalRaised - refundAmount).toFixed(4))) };
-        }
-        return c;
-      }));
-
-      // Update local wallet balance preview
-      const currentBal = parseFloat(balance) || 0;
-      setBalance((currentBal + refundAmount).toFixed(4));
-
-      const txHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
       const newAct = {
         id: Date.now(),
-        txHash,
-        blockNumber: 5932060,
-        addr: account ? `${account.slice(0, 6)}...${account.slice(-4)}` : '0xBacker...Wallet',
-        action: `Claimed Pro-Rata Refund ${refundAmount.toFixed(4)} ETH`,
+        txHash: receipt.hash,
+        blockNumber: receipt.blockNumber,
+        addr: `${account.slice(0, 6)}...${account.slice(-4)}`,
+        action: 'Claimed On-Chain Refund',
         event: 'ContributorRefundIssued',
         time: 'Just now',
         type: 'out',
-        amount: refundAmount,
+        amount: 0,
         campaignId
       };
       setActivities(prev => [newAct, ...prev]);
-      return { success: true, amount: refundAmount, msg: `Refunded ${refundAmount.toFixed(4)} ETH pro-rata successfully!` };
+      return { success: true, txHash: receipt.hash, blockNumber: receipt.blockNumber };
+    } catch (err) {
+      console.error('Claim refund failed:', err);
+      return { success: false, msg: err.reason || err.message || 'Refund claim failed' };
     }
-    return { success: false, msg: 'Refund amount calculated to 0' };
   }
 
-  // Backwards-compatible refund alias
   function requestRefund(campaignId) {
     return claimRefund(campaignId);
   }
@@ -629,37 +538,38 @@ export function AppProvider({ children }) {
     const created = {
       id,
       title: newCamp.title,
-      category: newCamp.category || 'Hardware / IoT',
+      category: newCamp.category || 'Other',
       verified: true,
-      creator: account || '0x3Fa8B43a8B4512CdEf8798C3953508495a02241F',
+      creator: account || '0xEf7A83468D2152718465D9143E3615ab9189D5f9',
+      contract_address: CONTRACT_ADDRESS,
       summary: newCamp.summary,
       goal: parseFloat(newCamp.goal) || 10.0,
       hardCap: 20.0,
       totalRaised: 0.0,
       totalWithdrawn: 0.0,
       deadlineDays: 30,
-      mlScore: 84,
+      mlScore: 78,
       riskLevel: 'LOW',
       state: 'ACTIVE',
-      riskDetails: 'Structural evaluation passed. Realistic roadmap deliverables with balanced tranches.',
+      riskDetails: 'Pre-launch evaluation completed.',
       milestones: [
-        { id: 1, title: 'Tranche 1 (20% Upfront)', percentage: 20, trancheBps: 2000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
-        { id: 2, title: 'Tranche 2 (25% Prototype)', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
-        { id: 3, title: 'Tranche 3 (25% Audit)', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
-        { id: 4, title: 'Tranche 4 (30% Mainnet)', percentage: 30, trancheBps: 3000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
+        { id: 1, title: 'Architecture & Prototype', percentage: 20, trancheBps: 2000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
+        { id: 2, title: 'Testnet Launch & Audits', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
+        { id: 3, title: 'Security Verification', percentage: 25, trancheBps: 2500, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' },
+        { id: 4, title: 'Production Readiness & Handover', percentage: 30, trancheBps: 3000, status: 'PENDING', attempts: 0, trancheClaimed: false, evidence: '' }
       ]
     };
     setCampaigns(prev => [created, ...prev]);
     setActiveCampaignId(id);
     setCurrentView('Campaign');
 
-    // Asynchronously register in backend SQLite
     createCampaignApi({
       id,
       title: created.title,
       description: created.summary,
       category: created.category,
       creator_address: created.creator,
+      contract_address: CONTRACT_ADDRESS,
       goal_eth: created.goal,
       hard_cap_eth: created.hardCap,
       deadline_timestamp: Math.floor(Date.now() / 1000) + 30 * 86400,
@@ -668,6 +578,72 @@ export function AppProvider({ children }) {
         tranche_bps: m.percentage * 100
       }))
     }).catch(err => console.warn('Failed to sync new campaign to API:', err));
+  }
+
+  // Supabase Auth State Synchronization
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    // Check existing active session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const u = session.user;
+        const profile = {
+          id: u.id,
+          name: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Authenticated User',
+          email: u.email,
+          avatar: u.user_metadata?.avatar_url || '',
+          role: u.user_metadata?.role || 'Contributor',
+          provider: 'supabase'
+        };
+        setUser(profile);
+        localStorage.setItem('trustbridge_user_session', JSON.stringify(profile));
+      }
+    }).catch(err => console.warn('Supabase getSession notice:', err));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const u = session.user;
+        const profile = {
+          id: u.id,
+          name: u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'Authenticated User',
+          email: u.email,
+          avatar: u.user_metadata?.avatar_url || '',
+          role: u.user_metadata?.role || 'Contributor',
+          provider: 'supabase'
+        };
+        setUser(profile);
+        localStorage.setItem('trustbridge_user_session', JSON.stringify(profile));
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        localStorage.removeItem('trustbridge_user_session');
+      }
+    });
+
+    return () => subscription?.unsubscribe();
+  }, []);
+
+  function loginOrRegister(userData) {
+    const sessionUser = {
+      name: userData?.name || 'Contributor User',
+      email: userData?.email || 'contributor@trustbridge.io',
+      role: userData?.role || 'Contributor',
+      avatar: userData?.avatar || ''
+    };
+    setUser(sessionUser);
+    localStorage.setItem('trustbridge_user_session', JSON.stringify(sessionUser));
+  }
+
+  async function logout() {
+    setUser(null);
+    localStorage.removeItem('trustbridge_user_session');
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Supabase signOut notice:', err);
+      }
+    }
   }
 
   return (
@@ -701,7 +677,8 @@ export function AppProvider({ children }) {
       withdrawTranche,
       claimRefund,
       requestRefund,
-      createCampaign
+      createCampaign,
+      syncOnChainData
     }}>
       {children}
     </AppContext.Provider>
@@ -711,4 +688,3 @@ export function AppProvider({ children }) {
 export function useApp() {
   return useContext(AppContext);
 }
-

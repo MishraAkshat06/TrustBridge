@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "TrustBridge Cryptographic Auth & Escrow Sequence",
+    "output": "trustbridge_auth_sequence.html",
+    "viewBox": [860, 920],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "siwe-challenge",
+        "label": "SIWE Cryptographic Challenge",
+        "focus": ["user", "wallet", "api"],
+        "note": "EIP-4361 cryptographic wallet authentication via nonce and signature recovery."
+      },
+      {
+        "id": "contract-escrow",
+        "label": "On-Chain Contribution & Refund",
+        "focus": ["user", "wallet", "contract"],
+        "note": "Direct EVM interaction enforcing 20 ETH cap and in-block excess refunds."
+      }
+    ]
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "Client UI", "sublabel": "React + Ethers" },
+    { "id": "wallet", "type": "security", "label": "MetaMask", "sublabel": "EVM Signer" },
+    { "id": "api", "type": "backend", "label": "Flask API", "sublabel": "Auth Gateway" },
+    { "id": "db", "type": "database", "label": "Database", "sublabel": "Postgres/SQLite" },
+    { "id": "contract", "type": "cloud", "label": "Escrow Vault", "sublabel": "Sepolia EVM" }
+  ],
+  "segments": [
+    { "from": 150, "to": 404, "label": "EIP-4361 SIWE Handshake" },
+    { "from": 420, "to": 630, "label": "AI Risk Scoring & Telemetry" },
+    { "from": 650, "to": 840, "label": "On-Chain Escrow Contribution" }
+  ],
+  "messages": [
+    { "from": "user", "to": "api", "y": 180, "label": "GET /api/auth/siwe/nonce", "variant": "emphasis" },
+    { "from": "api", "to": "user", "y": 222, "label": "200 { nonce, domain }", "variant": "return" },
+    { "from": "user", "to": "wallet", "y": 264, "label": "personal_sign(EIP-4361 message)", "variant": "emphasis" },
+    { "from": "wallet", "to": "user", "y": 306, "label": "0x signature returned", "variant": "return" },
+    { "from": "user", "to": "api", "y": 348, "label": "POST /api/auth/siwe/verify", "variant": "emphasis" },
+    { "from": "api", "to": "user", "y": 386, "label": "200 { jwt_token, role }", "variant": "return" },
+    { "from": "user", "to": "api", "y": 450, "label": "GET /api/campaigns/:id/risk", "variant": "default" },
+    { "from": "api", "to": "db", "y": 492, "label": "fetch campaign features", "variant": "default" },
+    { "from": "db", "to": "api", "y": 534, "label": "raw metadata rows", "variant": "return" },
+    { "from": "api", "to": "user", "y": 576, "label": "200 { risk_score, anomaly_flag }", "variant": "return" },
+    { "from": "user", "to": "wallet", "y": 680, "label": "contribute(campaignId) { value: 1.5 ETH }", "variant": "emphasis" },
+    { "from": "wallet", "to": "contract", "y": 722, "label": "broadcast eth_sendTransaction", "variant": "emphasis" },
+    { "from": "contract", "to": "user", "y": 764, "label": "emit ContributionLogged + refund excess", "variant": "dashed" },
+    { "from": "contract", "to": "wallet", "y": 806, "label": "tx receipt confirmed (mined)", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "api", "from": 174, "to": 230, "type": "backend" },
+    { "participant": "wallet", "from": 258, "to": 314, "type": "security" },
+    { "participant": "api", "from": 342, "to": 398, "type": "backend" },
+    { "participant": "api", "from": 444, "to": 584, "type": "backend" },
+    { "participant": "db", "from": 486, "to": 542, "type": "database" },
+    { "participant": "wallet", "from": 674, "to": 730, "type": "security" },
+    { "participant": "contract", "from": 716, "to": 814, "type": "cloud" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Replay-Resistant Authentication",
+      "items": [
+        "Cryptographic nonce generated server-side with 5-minute expiration",
+        "Sign-In with Ethereum (EIP-4361) verifies account ownership via ecrecover",
+        "Zero password exposure; session bounded by stateless HS256 JWT tokens"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Machine Learning Guardrails",
+      "items": [
+        "Pre-contribution risk evaluation synthesizes category, target, and duration features",
+        "Isolation Forest flags outlier campaign characteristics before ETH commitment",
+        "Mandatory UI disclosure enforces AI advisory status"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Atomic In-Block Settlement",
+      "items": [
+        "Smart contract enforces strict 20.00 ETH maximum ceiling across all backers",
+        "Excess payments above ceiling are computed and refunded in the exact same transaction",
+        "Funds remain locked in non-custodial contract until sequential milestone verification"
+      ]
+    }
+  ]
+}

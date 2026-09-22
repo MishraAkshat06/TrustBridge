@@ -1,0 +1,10 @@
+TestID,Action,Sender,TransactionHash,BlockNumber,GasUsed,TotalRaised,Status,ExpectedOutcome
+"T1","contribute(2.0 ETH)","0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC","0xb52d36bdea159109571b8a6ff34907a26dea5b9dab66b344e7f3223c435f9b1d","2","74243","2.0","CONFIRMED","Accepted; total reaches 2 ETH"
+"T2","contribute(5.0 ETH)","0x90F79bf6EB2c4f870365E785982E1f101E93b906","0x17656895e0b6f9c81063affb6d4702656ad9db2a902cbbe72d06bb33abe1ffed","3","60563","7.0","CONFIRMED","Accepted; total reaches 7 ETH"
+"T3","contribute(8.0 ETH)","0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65","0x8462e9f7ad1330c871e6ed592fe230074d71a5b0d6f296944afc0e760d5f4a4a","4","60563","15.0","CONFIRMED","Accepted; total reaches 15 ETH"
+"T4","contribute(4.0 ETH)","0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc","0xba1a95246b23f46aae1cf372a33df415f02cc80fa8b4b2516202352959ced2a4","5","60563","19.0","CONFIRMED","Accepted; total reaches 19 ETH"
+"T5","contribute(2.0 ETH) with 1 ETH headroom","0x976EA74026E726554dB657fA54763abd0C3a0aa9","0x86aa26efdb2451edad4efde95f5b61b91972f30c83564de4cbb8a4c64919d442","6","129700","20.0","CONFIRMED_SPLIT_REFUND","1 ETH accepted (1.0 ETH net deducted, 1 ETH refunded)"
+"T6","contribute(1.0 ETH) when cap saturated","0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC","REVERTED_ON_CHAIN_AS_EXPECTED","6","0","20.0","REVERTED: Hard cap reached / Campaign not active","Reverts cleanly without state mutation"
+"T7","approveMilestone(1)","0x70997970C51812dc3A010C7d01b50e0d17dc79C8","0x923fef51e562ea54baab7676394c75b35b29720f200e7dd894402e524b9e27a1","9","40410","20.0","APPROVED","Index advances to 2"
+"T8","claimRefund() mid-progress","0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC","REVERTED_ON_CHAIN_AS_EXPECTED","9","0","20.0","REVERTED: Refunds not eligible","Denied (Campaign IN_PROGRESS)"
+"T9","withdrawTranche(0)","0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266","0x0c68ac8f68fdc379b6b6edecfec96ccc99c7c03ccc0391a5d70a3560c57b3968","11","69567","20.0","WITHDRAWN","4.0 ETH paid to creator (Total withdrawn: 4.0 ETH)"

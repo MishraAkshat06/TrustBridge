@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "node tests/runner.js",
+    "test:contracts": "hardhat test",
+    "test:all": "node tests/runner.js && hardhat test",
     "test:e2e": "node tests/runner.js"
   },
   "keywords": [
@@ -16,5 +18,9 @@
     "nemotron"
   ],
   "author": "TrustBridge Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.29.1"
+  }
 }

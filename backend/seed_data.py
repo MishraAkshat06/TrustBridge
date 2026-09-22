@@ -13,7 +13,7 @@ def seed():
             "description": "Next-generation decentralized crowdfunding escrow combining off-chain ML anomaly scoring and human-in-the-loop multi-milestone verification on Ethereum Sepolia.",
             "category": "AI/ML",
             "creator_address": "0x71C836056a31AC34421B37b30960533C2C143e90",
-            "contract_address": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43",
+            "contract_address": "0x7c49bCc4A869480Bf3BAd72acf826667066c58d2",
             "goal_eth": 10.0,
             "hard_cap_eth": 20.0,
             "deadline_timestamp": 1742500000,
@@ -21,7 +21,7 @@ def seed():
                 {"title": "Architecture & Prototype Review", "tranche_bps": 2000, "status": "APPROVED"},
                 {"title": "Smart Contract Sepolia Audits", "tranche_bps": 2500, "status": "UNDER_REVIEW"},
                 {"title": "Agentic Verification Pipeline", "tranche_bps": 2500, "status": "PENDING"},
-                {"title": "Production Mainnet Readiness", "tranche_bps": 3000, "status": "PENDING"}
+                {"title": "Production Readiness & Handover", "tranche_bps": 3000, "status": "PENDING"}
             ]
         },
         {

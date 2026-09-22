@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "TrustBridge Low-Level Execution Dataflow",
+    "output": "trustbridge_lld_dataflow.html",
+    "viewBox": [1080, 780],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "contribution-dataflow",
+        "label": "Contribution & Invariant Flow",
+        "focus": ["tx_input", "headroom_check", "split_engine", "vault_state", "event_emit"],
+        "note": "Atomic ingestion, 20 ETH hard cap invariant checking, and in-block excess split."
+      },
+      {
+        "id": "milestone-dataflow",
+        "label": "Milestone & Pull Payment Flow",
+        "focus": ["proof_input", "consensus_gate", "tranche_release", "pull_payment"],
+        "note": "IPFS evidence hashing, verifier quorum consensus, and CEI pull-payment release."
+      }
+    ]
+  },
+  "stages": [
+    { "label": "Client Ingestion" },
+    { "label": "EVM Invariants" },
+    { "label": "Settlement Engine" },
+    { "label": "Ledger & Off-Chain Sync" },
+    { "label": "Withdrawal & Audit" }
+  ],
+  "nodes": [
+    { "id": "tx_input", "type": "frontend", "label": "Ethers.js Client", "sublabel": "msg.value + ID", "stage": 0, "row": 0, "tag": "signed payload" },
+    { "id": "proof_input", "type": "frontend", "label": "Evidence Client", "sublabel": "IPFS CID upload", "stage": 0, "row": 2, "tag": "milestone proof" },
+    { "id": "headroom_check", "type": "security", "label": "Cap Evaluator", "sublabel": "totalRaised + value", "stage": 1, "row": 0, "tag": "20 ETH limit" },
+    { "id": "consensus_gate", "type": "security", "label": "Verifier Quorum", "sublabel": "multi-sig consensus", "stage": 1, "row": 2, "tag": "audit review" },
+    { "id": "split_engine", "type": "backend", "label": "Excess Split Engine", "sublabel": "accepted = min(v, rem)", "stage": 2, "row": 0, "tag": "atomic delta" },
+    { "id": "tranche_release", "type": "backend", "label": "Tranche Unlocker", "sublabel": "BPS schedule release", "stage": 2, "row": 2, "tag": "10,000 BPS" },
+    { "id": "vault_state", "type": "database", "label": "Contract Storage", "sublabel": "Campaigns + Milestones", "stage": 3, "row": 1, "tag": "state storage" },
+    { "id": "event_emit", "type": "messagebus", "label": "EVM Event Bus", "sublabel": "ContributionLogged", "stage": 3, "row": 0, "tag": "on-chain logs" },
+    { "id": "pull_payment", "type": "security", "label": "Pull Payment Vault", "sublabel": "Checks-Effects-Interact", "stage": 4, "row": 2, "tag": "anti-reentrancy" },
+    { "id": "offchain_indexer", "type": "database", "label": "Flask Sync Store", "sublabel": "Supabase / SQLite", "stage": 4, "row": 0, "tag": "telemetry index" }
+  ],
+  "flows": [
+    { "from": "tx_input", "to": "headroom_check", "label": "contribute()", "classification": "payable", "variant": "emphasis", "route": "straight" },
+    { "from": "proof_input", "to": "consensus_gate", "label": "submitProof()", "classification": "evidence", "variant": "emphasis", "route": "straight" },
+    { "from": "headroom_check", "to": "split_engine", "label": "delta calc", "classification": "validated wei", "variant": "emphasis", "route": "straight" },
+    { "from": "consensus_gate", "to": "tranche_release", "label": "consensus", "classification": "quorum vote", "variant": "emphasis", "route": "straight" },
+    { "from": "split_engine", "to": "vault_state", "label": "save state", "classification": "storage", "variant": "emphasis", "route": "vertical-channel" },
+    { "from": "split_engine", "to": "event_emit", "label": "emit log", "classification": "EVM event", "variant": "default", "route": "straight", "labelDy": -20 },
+    { "from": "tranche_release", "to": "vault_state", "label": "unlock tranche", "classification": "storage", "variant": "emphasis", "route": "vertical-channel" },
+    { "from": "tranche_release", "to": "pull_payment", "label": "claimable", "classification": "withdrawable", "variant": "emphasis", "route": "straight" },
+    { "from": "event_emit", "to": "offchain_indexer", "label": "sync index", "classification": "REST sync", "variant": "default", "route": "straight" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Atomic In-Block Settlement", "items": ["Contract computes headroom dynamically: rem = 20 ETH - totalRaised", "Excess wei is split and refunded in exact same block transaction", "State storage updates before external transfer to eliminate reentrancy"] },
+    { "dot": "amber", "title": "Verifier Multi-Sig Consensus", "items": ["Creators anchor evidence to decentralized IPFS storage", "Independent verifiers review deliverables and submit on-chain votes", "Sequential tranche gates disburse exactly 20%, 25%, 25%, and 30%"] },
+    { "dot": "emerald", "title": "Pull Payment Pattern", "items": ["Zero push payments: creators and contributors pull funds explicitly", "CEI pattern zeros claimable balance before sending ether", "Prevents malicious recipient contracts from halting protocol flow"] }
+  ]
+}

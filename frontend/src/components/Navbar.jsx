@@ -3,9 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { ShieldCheck, Activity, Wallet, CheckCircle2 } from 'lucide-react';
 import { BrowserProvider } from 'ethers';
 
+import { useApp } from '../context/AppContext';
+
 export default function Navbar() {
   const [account, setAccount] = useState('');
   const location = useLocation();
+  const appContext = useApp();
+  const user = appContext?.user;
+  const isAuthenticated = Boolean(user);
 
   async function connectWallet() {
     if (window.ethereum) {
@@ -25,14 +30,23 @@ export default function Navbar() {
     }
   }, []);
 
-  const navLinks = [
+  const publicLinks = [
     { name: 'Protocol', path: '/' },
     { name: 'Explore', path: '/explore' },
-    { name: 'Pitch Studio', path: '/campaigns/create' },
-    { name: 'Creator Ops', path: '/dashboard/creator' },
-    { name: 'Backer Vault', path: '/dashboard/contributor' },
-    { name: 'Verifier Chamber', path: '/verifier' },
+    { name: 'Docs', path: '/docs' }
   ];
+
+  const protectedLinks = [
+    { name: 'Vault Hub', path: '/dashboard/creator' },
+    { name: 'Portfolio', path: '/dashboard/contributor' },
+    { name: 'Verifier', path: '/verifier' },
+    { name: 'Wallet', path: '/wallet' },
+    { name: 'Create', path: '/campaigns/create' }
+  ];
+
+  const visibleLinks = isAuthenticated
+    ? [...publicLinks.slice(0, 2), ...protectedLinks, publicLinks[2]]
+    : publicLinks;
 
   return (
     <header className="sticky top-0 z-50 bg-[#0B0E14]/90 backdrop-blur-md border-b border-[#262F40]">
@@ -52,7 +66,7 @@ export default function Navbar() {
 
         {/* Links */}
         <nav className="hidden md:flex items-center space-x-1">
-          {navLinks.map((link) => {
+          {visibleLinks.map((link) => {
             const active = location.pathname === link.path;
             return (
               <Link
@@ -70,26 +84,35 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Telemetry & Wallet */}
+        {/* Telemetry & Wallet (Gated: only when authenticated) */}
         <div className="flex items-center space-x-3">
           <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#121721] border border-[#262F40] text-[11px] font-mono text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Sepolia 11155111</span>
           </div>
 
-          {account ? (
-            <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-[#1A2130] border border-[#262F40] font-mono text-xs text-slate-200">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{account.slice(0, 6)}...{account.slice(-4)}</span>
-            </div>
+          {isAuthenticated ? (
+            account ? (
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-[#1A2130] border border-[#262F40] font-mono text-xs text-slate-200">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{account.slice(0, 6)}...{account.slice(-4)}</span>
+              </div>
+            ) : (
+              <button
+                onClick={connectWallet}
+                className="flex items-center space-x-2 px-3.5 py-1.5 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+              >
+                <Wallet className="w-3.5 h-3.5" />
+                <span>Connect Wallet</span>
+              </button>
+            )
           ) : (
-            <button
-              onClick={connectWallet}
-              className="flex items-center space-x-2 px-3.5 py-1.5 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold text-xs transition-colors shadow-sm"
+            <Link
+              to="/auth"
+              className="px-3.5 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-colors border border-slate-700 shadow-sm"
             >
-              <Wallet className="w-3.5 h-3.5" />
-              <span>Connect Wallet</span>
-            </button>
+              Sign In
+            </Link>
           )}
         </div>
       </div>

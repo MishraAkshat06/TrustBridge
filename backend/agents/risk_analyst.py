@@ -5,7 +5,7 @@ from . import ADVISORY_DISCLAIMER
 
 NVIDIA_API_KEY = os.environ.get("NVIDIA_API_KEY", "")
 NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-MODEL_NAME = "nvidia/nemotron-4-340b-instruct"
+MODEL_NAME = os.environ.get("NVIDIA_MODEL", "nvidia/nemotron-3.5-lightning-30b-a3b")
 
 class RiskAnalyst:
     """

@@ -20,3 +20,8 @@ frontend/dist-ssr/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Hardhat & Root Node
+node_modules/
+artifacts/
+cache/

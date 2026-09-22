@@ -57,7 +57,7 @@ contract TrustBridge {
     uint8 public currentMilestoneIndex; // 0..3
 
     mapping(address => uint256) public contributions;
-    mapping(address => bool) private _reentrancyLock;
+    bool private _locked;
 
     // ------------------------------------------------------------------------
     // Events
@@ -88,10 +88,10 @@ contract TrustBridge {
     }
 
     modifier nonReentrant() {
-        require(!_reentrancyLock[msg.sender], "Reentrancy guard triggered");
-        _reentrancyLock[msg.sender] = true;
+        require(!_locked, "Reentrancy guard triggered");
+        _locked = true;
         _;
-        _reentrancyLock[msg.sender] = false;
+        _locked = false;
     }
 
     // ------------------------------------------------------------------------
@@ -164,11 +164,11 @@ contract TrustBridge {
     }
 
     function _markFunded() internal {
-        state = CampaignState.FUNDED;
-        emit CampaignFunded(totalRaised);
-        // Tranche 1 (20% upfront) unlocks upon reaching FUNDED
-        milestones[0].state = MilestoneState.APPROVED;
         state = CampaignState.IN_PROGRESS;
+        emit CampaignFunded(totalRaised);
+        // Tranche 1 (20% upfront) unlocks upon reaching IN_PROGRESS
+        milestones[0].state = MilestoneState.APPROVED;
+        currentMilestoneIndex = 1;
     }
 
     // ------------------------------------------------------------------------
@@ -235,6 +235,10 @@ contract TrustBridge {
     // ------------------------------------------------------------------------
 
     function withdrawTranche(uint8 milestoneIndex) external onlyCreator nonReentrant {
+        require(
+            state == CampaignState.IN_PROGRESS || state == CampaignState.COMPLETED,
+            "Campaign not in progress or completed"
+        );
         require(milestoneIndex < 4, "Invalid milestone index");
         Milestone storage m = milestones[milestoneIndex];
         require(m.state == MilestoneState.APPROVED, "Tranche not approved");
@@ -264,9 +268,9 @@ contract TrustBridge {
         if (state == CampaignState.FAILED) {
             refundAmount = contribution;
         } else {
-            uint256 remainingEscrow = address(this).balance;
-            uint256 totalRemainingContributions = totalRaised - totalWithdrawn;
-            refundAmount = (contribution * remainingEscrow) / totalRemainingContributions;
+            uint256 unspentEscrow = totalRaised - totalWithdrawn;
+            require(unspentEscrow > 0, "No remaining escrow");
+            refundAmount = (contribution * unspentEscrow) / totalRaised;
         }
 
         require(refundAmount > 0, "Calculated refund is 0");

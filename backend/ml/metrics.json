@@ -1,8 +1,48 @@
 {
-  "precision": 0.7005,
-  "recall": 0.7562,
-  "f1": 0.7273,
-  "roc_auc": 0.7345,
-  "brier_score": 0.2095,
-  "samples_evaluated": 375
+  "protocol": "TrustBridge Zero-Leakage Pre-Launch Protocol",
+  "dataset_split": {
+    "total_samples": 2000,
+    "train_samples": 1500,
+    "test_samples": 500,
+    "test_ratio": 0.25,
+    "stratified": true
+  },
+  "feature_set": [
+    "goal_eth",
+    "duration_days",
+    "category_code",
+    "title_len",
+    "desc_len",
+    "milestone_count"
+  ],
+  "champion_model": "Logistic Regression",
+  "models_comparison": [
+    {
+      "model": "Logistic Regression",
+      "accuracy": 0.704,
+      "precision": 0.7162,
+      "recall": 0.8682,
+      "f1": 0.7849,
+      "roc_auc": 0.7474,
+      "brier_score": 0.1921
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 0.686,
+      "precision": 0.6985,
+      "recall": 0.8714,
+      "f1": 0.7754,
+      "roc_auc": 0.73,
+      "brier_score": 0.1995
+    },
+    {
+      "model": "Gradient Boosting",
+      "accuracy": 0.682,
+      "precision": 0.7111,
+      "recall": 0.8232,
+      "f1": 0.763,
+      "roc_auc": 0.7032,
+      "brier_score": 0.2094
+    }
+  ]
 }

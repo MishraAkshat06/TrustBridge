@@ -62,23 +62,38 @@ export default function VerifierPortal() {
     setTimeout(() => setCopiedCid(false), 2000);
   }
 
-  function handleApprove() {
+  async function handleApprove() {
     if (!targetCampaign || !targetMilestone) return;
-    const res = approveMilestone(targetCampaign.id, targetMilestone.id);
-    setNoticeType('success');
-    setActiveNotice(`Signed Consensus Approval for Tranche #${targetMilestone.id} (${targetMilestone.percentage || 25}%) on Sepolia! Funds unlocked.`);
+    try {
+      const res = await approveMilestone(targetCampaign.id, targetMilestone.id);
+      if (res && res.success) {
+        setNoticeType('success');
+        setActiveNotice(`Signed Consensus Approval for Tranche #${targetMilestone.id} (${targetMilestone.percentage || 25}%) on Sepolia! Tx: ${res.txHash.slice(0, 10)}...`);
+      } else {
+        setNoticeType('error');
+        setActiveNotice(res?.msg || 'Approval failed on chain');
+      }
+    } catch (err) {
+      setNoticeType('error');
+      setActiveNotice(err.message);
+    }
     setTimeout(() => setActiveNotice(''), 6000);
   }
 
-  function handleReject() {
+  async function handleReject() {
     if (!targetCampaign || !targetMilestone) return;
-    const res = rejectMilestone(targetCampaign.id, targetMilestone.id, 'Deliverable benchmarks did not satisfy consensus requirements');
-    if (res?.isFinal) {
+    try {
+      const res = await rejectMilestone(targetCampaign.id, targetMilestone.id);
+      if (res && res.success) {
+        setNoticeType('warning');
+        setActiveNotice(`Rejection recorded on Sepolia for Tranche #${targetMilestone.id}. Tx: ${res.txHash.slice(0, 10)}...`);
+      } else {
+        setNoticeType('error');
+        setActiveNotice(res?.msg || 'Rejection failed on chain');
+      }
+    } catch (err) {
       setNoticeType('error');
-      setActiveNotice(`Final Rejection executed for Tranche #${targetMilestone.id}. Grace period exhausted. Campaign transitioned to REFUNDABLE mode.`);
-    } else {
-      setNoticeType('warning');
-      setActiveNotice(`Tranche #${targetMilestone.id} rejected with 1-retry grace period. Creator notified to submit updated evidence.`);
+      setActiveNotice(err.message);
     }
     setTimeout(() => setActiveNotice(''), 6000);
   }
@@ -107,7 +122,7 @@ export default function VerifierPortal() {
               const nextM = camp?.milestones?.find(m => m.status === 'UNDER_REVIEW') || camp?.milestones?.[0];
               if (nextM) setSelectedMilestoneId(nextM.id);
             }}
-            className="px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl text-xs font-mono font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-brand)]"
+            className="px-3 py-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-mono font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/50 backdrop-blur-md transition"
           >
             {campaigns.map(c => (
               <option key={c.id} value={c.id}>
@@ -153,12 +168,12 @@ export default function VerifierPortal() {
               onClick={() => setSelectedMilestoneId(m.id)}
               className={`flex-1 min-w-[140px] p-3 rounded-xl border text-left transition cursor-pointer ${
                 isSelected
-                  ? 'bg-[var(--accent-brand-subtle)] border-[var(--accent-brand)] shadow-xs'
-                  : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:bg-[var(--hover-bg)]'
+                  ? 'bg-emerald-500/15 border-emerald-400 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_rgba(0,245,160,0.15)] font-semibold'
+                  : 'bg-white dark:bg-[var(--bg-surface)] border-slate-200 dark:border-[var(--border-subtle)] hover:border-slate-300 dark:hover:border-white/20'
               }`}
             >
               <div className="flex items-center justify-between text-[10px] font-mono mb-1">
-                <span className="font-semibold text-[var(--text-muted)]">Tranche #{m.id || idx + 1}</span>
+                <span className="font-semibold text-slate-500 dark:text-[var(--text-muted)]">Tranche #{m.id || idx + 1}</span>
                 <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold uppercase ${
                   isApproved 
                     ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
@@ -166,25 +181,25 @@ export default function VerifierPortal() {
                     ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
                     : isRejected
                     ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400'
-                    : 'bg-[var(--bg-surface-subtle)] text-[var(--text-muted)]'
+                    : 'bg-slate-100 dark:bg-black/30 text-slate-500 dark:text-[var(--text-muted)]'
                 }`}>
                   {m.status ? m.status.replace('_', ' ') : 'PENDING'}
                 </span>
               </div>
-              <div className="text-xs font-bold truncate text-[var(--text-primary)]">{m.title}</div>
-              <div className="text-[11px] font-mono text-[var(--text-secondary)] mt-0.5">{m.percentage || 25}% Allocation</div>
+              <div className="text-xs font-bold truncate text-slate-900 dark:text-[var(--text-primary)]">{m.title}</div>
+              <div className="text-[11px] font-mono text-slate-500 dark:text-[var(--text-secondary)] mt-0.5">{m.percentage || 25}% Allocation</div>
             </button>
           );
         })}
       </div>
 
       {/* Main Chamber Inspection Card */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-6 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--border-subtle)] pb-4 gap-2">
+      <div className="bg-white/90 dark:bg-[var(--bg-surface)] border border-slate-200 dark:border-[var(--border-subtle)] rounded-2xl p-6 shadow-xl backdrop-blur-xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-[var(--border-subtle)] pb-4 gap-2">
           <div>
-            <div className="text-[10px] font-mono uppercase text-[var(--text-muted)]">AUDIT CANDIDATE:</div>
-            <h3 className="text-lg font-bold text-[var(--text-primary)]">{targetCampaign.title}</h3>
-            <p className="text-xs font-mono text-[var(--text-secondary)] mt-0.5">
+            <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-[var(--text-muted)]">AUDIT CANDIDATE:</div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-[var(--text-primary)]">{targetCampaign.title}</h3>
+            <p className="text-xs font-mono text-slate-500 dark:text-[var(--text-secondary)] mt-0.5">
               Tranche {targetMilestone.id}: {targetMilestone.title} ({targetMilestone.percentage || 25}% of 20 ETH Cap = {((20 * (targetMilestone.percentage || 25)) / 100).toFixed(2)} ETH)
             </p>
           </div>
@@ -196,7 +211,7 @@ export default function VerifierPortal() {
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                 : targetMilestone.status === 'REJECTED_RETRY'
                 ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30'
-                : 'bg-[var(--bg-surface-subtle)] text-[var(--text-muted)] border-[var(--border-subtle)]'
+                : 'bg-slate-100 dark:bg-black/30 text-slate-500 dark:text-[var(--text-muted)] border-slate-200 dark:border-white/10'
             }`}>
               {targetMilestone.status ? targetMilestone.status.replace('_', ' ') : 'PENDING'}
             </span>
@@ -206,22 +221,22 @@ export default function VerifierPortal() {
         {/* Deliverables & Evidence IPFS Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
           {/* IPFS CID Card */}
-          <div className="p-4 rounded-xl bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] space-y-2">
-            <div className="flex items-center justify-between text-[var(--text-muted)]">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 space-y-2 backdrop-blur-md">
+            <div className="flex items-center justify-between text-slate-500 dark:text-[var(--text-muted)]">
               <span className="flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-[var(--accent-brand)]" />
+                <FileText className="w-3.5 h-3.5 text-cyan-400" />
                 <span className="font-semibold uppercase text-[10px]">Cryptographic Proof (IPFS CID)</span>
               </span>
               <button
                 type="button"
                 onClick={handleCopyCid}
-                className="hover:text-[var(--text-primary)] flex items-center gap-1 text-[11px] cursor-pointer"
+                className="hover:text-slate-900 dark:hover:text-slate-100 flex items-center gap-1 text-[11px] cursor-pointer"
               >
                 {copiedCid ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                 <span>{copiedCid ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
-            <div className="font-mono text-xs break-all text-[var(--text-primary)] bg-[var(--bg-surface)] p-2 rounded-lg border border-[var(--border-subtle)]">
+            <div className="font-mono text-xs break-all text-cyan-600 dark:text-cyan-300 bg-white dark:bg-black/60 p-2.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-inner">
               {ipfsCid}
             </div>
             {targetMilestone.evidence && (

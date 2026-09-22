@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "TrustBridge System Architecture",
+    "output": "trustbridge_architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-stack",
+        "label": "Full Protocol Stack",
+        "focus": ["client-ui", "wallet-provider", "flask-api", "ai-risk-engine", "db-storage", "evm-escrow", "ipfs-storage"],
+        "note": "End-to-end architecture connecting React Web3 client, Flask AI backend, and Sepolia smart contract escrow."
+      },
+      {
+        "id": "onchain-settlement",
+        "label": "Web3 Escrow Settlement",
+        "focus": ["wallet-provider", "evm-escrow", "ipfs-storage"],
+        "note": "Non-custodial milestone release with 4-tranche pull payments and IPFS evidence anchoring."
+      },
+      {
+        "id": "offchain-intelligence",
+        "label": "AI Risk Intelligence",
+        "focus": ["client-ui", "flask-api", "ai-risk-engine", "db-storage"],
+        "note": "Dual-model risk classification (Random Forest + Isolation Forest anomaly detection)."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "wallet-provider",
+      "type": "security",
+      "label": "Web3 Wallet",
+      "sublabel": "MetaMask / Ethers v6",
+      "pos": [40, 140],
+      "size": [150, 64],
+      "tag": "EIP-4361 SIWE"
+    },
+    {
+      "id": "client-ui",
+      "type": "frontend",
+      "label": "Web3 Client",
+      "sublabel": "React 18 + Tailwind",
+      "pos": [40, 300],
+      "size": [150, 64],
+      "tag": "Dual Theme UI"
+    },
+    {
+      "id": "auth-gateway",
+      "type": "security",
+      "label": "Auth Gateway",
+      "sublabel": "Firebase OAuth",
+      "pos": [40, 460],
+      "size": [150, 64],
+      "tag": "JWT Session"
+    },
+    {
+      "id": "evm-escrow",
+      "type": "cloud",
+      "label": "TrustBridge Vault",
+      "sublabel": "Sepolia EVM :0x7c49",
+      "pos": [320, 140],
+      "size": [160, 64],
+      "tag": "20 ETH Cap"
+    },
+    {
+      "id": "flask-api",
+      "type": "backend",
+      "label": "API Gateway",
+      "sublabel": "Flask REST :5000",
+      "pos": [320, 300],
+      "size": [160, 64],
+      "tag": "REST Endpoints"
+    },
+    {
+      "id": "db-storage",
+      "type": "database",
+      "label": "Metadata Store",
+      "sublabel": "Supabase / SQLite",
+      "pos": [320, 460],
+      "size": [160, 64],
+      "tag": "Dual Engine"
+    },
+    {
+      "id": "ipfs-storage",
+      "type": "cloud",
+      "label": "IPFS Evidence",
+      "sublabel": "Decentralized Pin",
+      "pos": [590, 140],
+      "size": [160, 64],
+      "tag": "Milestone Proofs"
+    },
+    {
+      "id": "ai-risk-engine",
+      "type": "backend",
+      "label": "AI Risk Engine",
+      "sublabel": "Scikit-Learn ML",
+      "pos": [590, 300],
+      "size": [160, 64],
+      "tag": "Isolation Forest"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Off-Chain Intelligence & Persistence",
+      "wraps": ["flask-api", "db-storage", "ai-risk-engine"]
+    },
+    {
+      "kind": "security-group",
+      "label": "On-Chain Settlement & Evidence Layer",
+      "wraps": ["evm-escrow", "ipfs-storage"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-to-wallet",
+      "from": "client-ui",
+      "to": "wallet-provider",
+      "label": "connect wallet",
+      "variant": "security"
+    },
+    {
+      "id": "ui-to-auth",
+      "from": "client-ui",
+      "to": "auth-gateway",
+      "label": "OAuth login",
+      "variant": "security",
+      "labelAt": [115, 378]
+    },
+    {
+      "id": "wallet-to-contract",
+      "from": "wallet-provider",
+      "to": "evm-escrow",
+      "label": "ETH transactions",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ui-to-api",
+      "from": "client-ui",
+      "to": "flask-api",
+      "label": "HTTP /api/*",
+      "variant": "emphasis"
+    },
+    {
+      "id": "api-to-db",
+      "from": "flask-api",
+      "to": "db-storage",
+      "label": "ORM queries",
+      "labelAt": [400, 378]
+    },
+    {
+      "id": "api-to-ai",
+      "from": "flask-api",
+      "to": "ai-risk-engine",
+      "label": "feature telemetry"
+    },
+    {
+      "id": "contract-to-ipfs",
+      "from": "evm-escrow",
+      "to": "ipfs-storage",
+      "label": "verify proof CID",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Client Tier",
+      "items": [
+        "React 18 single-page application with Tailwind CSS dual-theme engine (Groww Light / Binance Dark)",
+        "MetaMask and Web3 wallet integration using Ethers.js v6 with Sepolia testnet sync",
+        "Unified authentication supporting Sign-In with Ethereum (SIWE) and Google OAuth"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Backend & AI Tier",
+      "items": [
+        "Flask REST API providing campaign catalog, telemetry, and verifier workflows",
+        "Multi-Agent Risk Engine combining Supervised Classifier and Isolation Forest Anomaly Detection",
+        "Hybrid persistence with Supabase PostgreSQL (production) and local SQLite fallback"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Smart Contract Escrow",
+      "items": [
+        "TrustBridge.sol escrow contract deployed on Sepolia (0x7c49bCc4A869480Bf3BAd72acf826667066c58d2)",
+        "Strict on-chain invariants: 20 ETH hard cap, 10 ETH minimum goal, pull-payment withdrawals",
+        "4-Tranche sequential release (20% -> 25% -> 25% -> 30%) governed by multi-signature consensus"
+      ]
+    }
+  ]
+}

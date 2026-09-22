@@ -1,31 +1,59 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ------------------------------------------------------------------------- */
 /* Groww FinTech Light Mode (Default)                                       */
 /* ------------------------------------------------------------------------- */
 :root {
-  --bg-canvas: #FAF9F6;
+  color-scheme: light;
+  accent-color: #00D09C;
+  scrollbar-color: #CBD5E1 transparent;
+
+  /* Institutional Canvas & Surfaces */
+  --bg-canvas: #F8FAFC;
   --bg-surface: #FFFFFF;
   --bg-surface-subtle: #F4F6F8;
   --bg-surface-elevated: #FFFFFF;
   --border-subtle: #E2E8F0;
   --border-strong: #CBD5E1;
+
+  /* Crisp Typography & Contrast (WCAG AAA / AA) */
   --text-primary: #111827;
   --text-secondary: #475569;
   --text-muted: #64748B;
+
+  /* Groww FinTech Mint Accents */
   --accent-brand: #00D09C;
   --accent-brand-secondary: #009379;
   --accent-brand-hover: #00B386;
   --accent-brand-subtle: #E8F8F4;
   --accent-brand-text: #00875A;
   --accent-gold: #D97706;
-  --color-success: #10B981;
-  --color-danger: #EF4444;
-  --color-warning: #F59E0B;
-  --header-bg: rgba(255, 255, 255, 0.92);
+
+  /* State Alerts (WCAG 2.2 AA compliant) */
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-warning: #B45309;
+  --focus-ring: #00D09C;
+
+  /* Shell Components */
+  --header-bg: rgba(255, 255, 255, 0.78);
   --sidebar-bg: #FFFFFF;
 
-  /* Aliases */
+  /* Liquid Prismatic Glass Design Tokens (Light Mode) */
+  --surface-glass: rgba(255, 255, 255, 0.65);
+  --surface-glass-card: rgba(241, 245, 249, 0.5);
+  --surface-glass-card-hover: rgba(255, 255, 255, 0.85);
+  --border-glass: rgba(255, 255, 255, 0.8);
+  --border-glass-caustic: rgba(14, 165, 233, 0.15);
+  --shadow-glass: 0 20px 50px -10px rgba(14, 165, 233, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  --accent-primary: #0284C7;
+  --accent-primary-hover: #0EA5E9;
+  --accent-verification: #0D9488;
+  --accent-teal: #10B981;
+
+  /* Aliases for backwards compatibility */
   --bg-page: #FAF9F6;
   --bg-card: #FFFFFF;
   --card-bg: #FFFFFF;
@@ -36,49 +64,150 @@
 }
 
 /* ------------------------------------------------------------------------- */
-/* Binance Pro Dark Mode (.dark class on <html>)                            */
+/* Deep Obsidian & Cyber-Emerald Prism Dark Mode (.dark class on <html>)    */
 /* ------------------------------------------------------------------------- */
 .dark {
-  --bg-canvas: #0B0E11;
-  --bg-surface: #181A20;
-  --bg-surface-subtle: #12161C;
-  --bg-surface-elevated: #1E2329;
-  --border-subtle: #2B313A;
-  --border-strong: #3D4552;
-  --text-primary: #EAECEF;
-  --text-secondary: #848E9C;
-  --text-muted: #848E9C;
-  --accent-brand: #F0B90B;
-  --accent-brand-secondary: #FCD535;
-  --accent-brand-hover: #FCD535;
-  --accent-brand-subtle: rgba(240, 185, 11, 0.12);
-  --accent-brand-text: #F0B90B;
-  --accent-gold: #F0B90B;
-  --color-success: #0ECB81;
-  --color-danger: #F6465D;
-  --color-warning: #F0B90B;
-  --header-bg: rgba(11, 14, 17, 0.92);
-  --sidebar-bg: #12161C;
+  color-scheme: dark;
+  accent-color: #00F5A0;
+  scrollbar-color: #1E293B transparent;
 
-  /* Aliases */
-  --bg-page: #0B0E11;
-  --bg-card: #181A20;
-  --card-bg: #181A20;
-  --border-color: #2B313A;
-  --text-main: #EAECEF;
-  --hover-bg: #1E2329;
-  --surface-alt: #1E2329;
+  /* Deep Obsidian Canvas & Liquid Glass Surfaces */
+  --bg-canvas: #07090E;
+  --bg-surface: rgba(14, 20, 31, 0.65);
+  --bg-surface-subtle: rgba(11, 15, 25, 0.85);
+  --bg-surface-elevated: #0F172A;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* High Contrast Dark Typography (WCAG AAA / AA) */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  /* Cyber-Emerald Mint & Cyan Accents */
+  --accent-brand: #00F5A0;
+  --accent-brand-secondary: #00D2FF;
+  --accent-brand-hover: #00E090;
+  --accent-brand-subtle: rgba(0, 245, 160, 0.12);
+  --accent-brand-text: #00F5A0;
+  --accent-gold: #FBBF24;
+
+  /* Liquid Prismatic Glass Design Tokens (Dark Mode) */
+  --surface-glass: rgba(14, 20, 31, 0.65);
+  --surface-glass-card: rgba(14, 20, 31, 0.55);
+  --surface-glass-card-hover: rgba(20, 28, 44, 0.75);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-caustic: rgba(0, 245, 160, 0.2);
+  --shadow-glass: 0 20px 60px -10px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  --accent-primary: #00F5A0;
+  --accent-primary-hover: #00E090;
+  --accent-verification: #00D2FF;
+  --accent-teal: #00F5A0;
+
+  /* State Alerts */
+  --color-success: #00F5A0;
+  --color-danger: #F43F5E;
+  --color-warning: #FBBF24;
+  --focus-ring: #00F5A0;
+
+  /* Shell Components */
+  --header-bg: rgba(7, 9, 14, 0.85);
+  --sidebar-bg: rgba(11, 15, 25, 0.85);
+
+  /* Aliases for backwards compatibility */
+  --bg-page: #07090E;
+  --bg-card: rgba(14, 20, 31, 0.65);
+  --card-bg: rgba(14, 20, 31, 0.65);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-main: #F8FAFC;
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --surface-alt: rgba(14, 20, 31, 0.8);
 }
 
 body {
   background-color: var(--bg-canvas);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(0, 245, 160, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(0, 210, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   letter-spacing: -0.015em;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              color 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark body {
+  background-color: var(--bg-canvas);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(0, 245, 160, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(0, 210, 255, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+}
+
+/* ------------------------------------------------------------------------- */
+/* View Transitions API (Cinematic Cross-Fade & Zero Jank)                  */
+/* ------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: fadeOutView;
+}
+
+::view-transition-new(root) {
+  animation-name: fadeInView;
+}
+
+@keyframes fadeOutView {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fadeInView {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Deep CSS Token Transitioning State                                       */
+/* ------------------------------------------------------------------------- */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              fill 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-delay: 0s !important;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Modern Web Guidance: Scrollbar Fallback                                   */
+/* ------------------------------------------------------------------------- */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 9999px;
+  }
 }
 
 /* Custom utility mappings for tokens */
@@ -92,21 +221,33 @@ body {
 .bg-surface-alt\/40 { background-color: color-mix(in srgb, var(--surface-alt) 40%, transparent); }
 
 /* Card styles adapting to dual theme */
-.fintech-card {
-  background: var(--bg-surface);
+.fintech-card, .card-3d {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: 1rem;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
-.dark .fintech-card {
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+.dark .fintech-card, .dark .card-3d {
+  background: rgba(24, 26, 32, 0.75);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.fintech-card:hover {
+.fintech-card:hover, .card-3d:hover {
   border-color: var(--border-strong);
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 208, 156, 0.1);
+}
+
+.dark .fintech-card:hover, .dark .card-3d:hover {
+  box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(240, 185, 11, 0.15);
 }
 
 /* Primary CTA */
@@ -164,3 +305,479 @@ body {
 .pulse-dot {
   animation: softPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* ------------------------------------------------------------------------- */
+/* Modern UI: Liquid Glass, Specular Physics & 3D Perspective               */
+/* ------------------------------------------------------------------------- */
+
+/* Perspective Container */
+.perspective-stage {
+  perspective: 1200px;
+}
+
+/* 3D Tilt Card Base with Hardware Acceleration */
+.card-tilt-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg)) translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.card-tilt-3d:hover {
+  transition: transform 0.06s linear, box-shadow 0.2s ease;
+}
+
+/* 3D Depth Child Layers */
+.card-tilt-3d .layer-surface {
+  transform: translateZ(0px);
+}
+
+.card-tilt-3d .layer-floating-badge {
+  transform: translateZ(24px);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+}
+
+.card-tilt-3d .layer-floating-action {
+  transform: translateZ(40px);
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.25));
+}
+
+/* Liquid Glass with Physical Specular Rim & Vibrancy */
+.liquid-glass {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
+    0 20px 40px -15px rgba(0, 0, 0, 0.5),
+    0 0 1px 1px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+:root:not(.dark) .liquid-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.65) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.05),
+    0 20px 35px -10px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Ultra Transparent Glass */
+.glass-transparent {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+:root:not(.dark) .glass-transparent {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8), 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Mouse-Tracking Spotlight & Specular Rim */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.1),
+    transparent 45%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* Holographic Liquid Prism Sheen */
+.liquid-prism {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-prism::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    rgba(0, 208, 156, 0.12) 0deg,
+    rgba(240, 185, 11, 0.15) 72deg,
+    rgba(147, 51, 234, 0.1) 144deg,
+    rgba(59, 130, 246, 0.15) 216deg,
+    rgba(0, 208, 156, 0.12) 360deg
+  );
+  filter: blur(36px);
+  mix-blend-mode: color-dodge;
+  opacity: 0.65;
+  pointer-events: none;
+  animation: prismSpin 22s linear infinite;
+}
+
+@keyframes prismSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes gyroRotateX {
+  0% { transform: rotateX(70deg) rotateZ(0deg); }
+  100% { transform: rotateX(70deg) rotateZ(360deg); }
+}
+
+@keyframes gyroRotateY {
+  0% { transform: rotateY(70deg) rotateZ(360deg); }
+  100% { transform: rotateY(70deg) rotateZ(0deg); }
+}
+
+@keyframes float3DLayer1 {
+  0%, 100% { transform: translateY(0px) translateZ(35px); }
+  50% { transform: translateY(-8px) translateZ(48px); }
+}
+
+@keyframes float3DLayer2 {
+  0%, 100% { transform: translateY(0px) translateZ(45px); }
+  50% { transform: translateY(8px) translateZ(60px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-tilt-3d, .liquid-prism::before, .holo-cube {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Obsidian & Cyber-Emerald Prism Ambient Glows & Holographic Effects        */
+/* ------------------------------------------------------------------------- */
+.dark body {
+  background-image: 
+    radial-gradient(ellipse 90% 50% at 50% -20%, rgba(0, 245, 160, 0.07), transparent 70%),
+    radial-gradient(circle 800px at 100% 25%, rgba(0, 210, 255, 0.05), transparent 60%),
+    radial-gradient(circle 600px at 0% 75%, rgba(0, 245, 160, 0.04), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Liquid Prismatic Card Surface */
+.liquid-glass-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-card:hover {
+  border-color: rgba(0, 245, 160, 0.3);
+  box-shadow: 0 20px 40px -15px rgba(0, 245, 160, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Liquid Progress Bar with Animated Shimmer */
+.liquid-progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-progress-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  animation: progressShimmer 2.5s infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(200%); }
+}
+
+/* 3D Holographic Escrow Cube */
+.holo-cube-scene {
+  perspective: 1000px;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+
+.holo-cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: holoRotate 14s infinite linear;
+}
+
+.holo-face {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgba(0, 245, 160, 0.4);
+  background: rgba(14, 20, 31, 0.45);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 20px rgba(0, 245, 160, 0.2), 0 0 15px rgba(0, 210, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 22px;
+  color: #00F5A0;
+}
+
+.holo-face-front  { transform: rotateY(  0deg) translateZ(60px); }
+.holo-face-back   { transform: rotateY(180deg) translateZ(60px); }
+.holo-face-right  { transform: rotateY( 90deg) translateZ(60px); }
+.holo-face-left   { transform: rotateY(-90deg) translateZ(60px); }
+.holo-face-top    { transform: rotateX( 90deg) translateZ(60px); }
+.holo-face-bottom { transform: rotateX(-90deg) translateZ(60px); }
+
+@keyframes holoRotate {
+  0% {
+    transform: rotateX(-20deg) rotateY(0deg) rotateZ(0deg);
+  }
+  50% {
+    transform: rotateX(25deg) rotateY(180deg) rotateZ(10deg);
+  }
+  100% {
+    transform: rotateX(-20deg) rotateY(360deg) rotateZ(0deg);
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Liquid Glass Navigation Capsule & Lens Pills                              */
+/* ------------------------------------------------------------------------- */
+
+/* Left Vertical Navigation Rail: Liquid Glass Capsule */
+.liquid-nav-rail {
+  border-radius: 32px;
+  width: 68px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    rgba(14, 20, 31, 0.45) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5),
+    0 12px 40px -10px rgba(0, 0, 0, 0.65),
+    0 0 20px -2px rgba(0, 245, 160, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root:not(.dark) .liquid-nav-rail {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 32px;
+  box-shadow: 
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    0 16px 36px -8px rgba(15, 23, 42, 0.08);
+}
+
+/* Dock Icon Liquid Drop Pill */
+.liquid-rail-item {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #94A3B8;
+  border: 1px solid transparent;
+}
+
+.liquid-rail-item:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.04);
+}
+
+:root:not(.dark) .liquid-rail-item {
+  color: #64748B;
+}
+
+:root:not(.dark) .liquid-rail-item:hover {
+  color: #111827;
+  background: rgba(0, 208, 156, 0.08);
+}
+
+.liquid-rail-item-active {
+  color: #FFFFFF !important;
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(0, 245, 160, 0.18) 50%,
+    rgba(0, 210, 255, 0.06) 100%
+  ) !important;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    0 4px 14px rgba(0, 245, 160, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 18px !important;
+  transform: scale(1.05) !important;
+}
+
+:root:not(.dark) .liquid-rail-item-active {
+  color: #047857 !important;
+  background: radial-gradient(
+    circle at 35% 25%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(0, 245, 160, 0.25) 60%,
+    rgba(16, 185, 129, 0.15) 100%
+  ) !important;
+  border: 1px solid rgba(0, 245, 160, 0.4) !important;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 4px 12px rgba(0, 245, 160, 0.2) !important;
+  border-radius: 18px !important;
+  transform: scale(1.05) !important;
+}
+
+/* Top Horizontal Navigation: Floating Liquid Lens Pills */
+.liquid-nav-pill {
+  border-radius: 9999px;
+  padding: 6px 18px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.liquid-nav-pill:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+:root:not(.dark) .liquid-nav-pill {
+  color: #475569;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:root:not(.dark) .liquid-nav-pill:hover {
+  color: #0F172A;
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.95);
+}
+
+.liquid-nav-pill-active {
+  color: #ffffff !important;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 245, 160, 0.12) 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 8px 24px -4px rgba(0, 210, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+:root:not(.dark) .liquid-nav-pill-active {
+  color: #047857 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(236, 253, 245, 0.8) 100%
+  ) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 
+    inset 0 1.5px 1px rgba(255, 255, 255, 1),
+    0 6px 18px -4px rgba(16, 185, 129, 0.22) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Frosted Glass Panel Tokens (Cards & Containers)                          */
+/* ------------------------------------------------------------------------- */
+.light-frosted-card {
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 28px;
+  box-shadow: 
+    /* Specular top rim reflection */
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    /* Inner soft caustic fill */
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.03),
+    /* Soft ambient drop shadow */
+    0 20px 45px -12px rgba(15, 23, 42, 0.06),
+    0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .light-frosted-card {
+  background: rgba(14, 20, 31, 0.65);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  box-shadow: 
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4),
+    0 20px 45px -12px rgba(0, 0, 0, 0.7),
+    0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+

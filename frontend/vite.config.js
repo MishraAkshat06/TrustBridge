@@ -8,4 +8,12 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  server: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    },
+    proxy: {
+      '/api': 'http://127.0.0.1:5000'
+    }
+  }
 })

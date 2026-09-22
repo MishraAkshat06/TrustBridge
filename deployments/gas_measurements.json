@@ -1,0 +1,47 @@
+[
+  {
+    "operation": "Contract Deployment",
+    "gasUsed": "2006545",
+    "notes": "Initializes immutable constants and 4 milestone structs"
+  },
+  {
+    "operation": "contribute() [Standard]",
+    "gasUsed": "74243",
+    "notes": "Under-cap deposit, updates balance and totalRaised"
+  },
+  {
+    "operation": "contribute() [With Excess Split]",
+    "gasUsed": "129700",
+    "notes": "Calculates clamp headroom, triggers in-block refund"
+  },
+  {
+    "operation": "submitMilestoneEvidence()",
+    "gasUsed": "74620",
+    "notes": "Stores IPFS hash, transitions milestone to UNDER_REVIEW"
+  },
+  {
+    "operation": "approveMilestone()",
+    "gasUsed": "40410",
+    "notes": "Advances currentMilestoneIndex, unlocks tranche"
+  },
+  {
+    "operation": "rejectMilestone()",
+    "gasUsed": "32997",
+    "notes": "Marks milestone REJECTED, tracks attempt counter"
+  },
+  {
+    "operation": "withdrawTranche()",
+    "gasUsed": "69567",
+    "notes": "Pull-payment ETH transfer to creator"
+  },
+  {
+    "operation": "claimRefund() [FAILED]",
+    "gasUsed": "47688",
+    "notes": "100% principal pull-payment refund"
+  },
+  {
+    "operation": "claimRefund() [REFUNDABLE]",
+    "gasUsed": "51449",
+    "notes": "Equal-per-wei pro-rata pull-payment refund"
+  }
+]

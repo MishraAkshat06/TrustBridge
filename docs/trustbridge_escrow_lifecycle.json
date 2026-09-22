@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "TrustBridge Milestone Escrow Lifecycle",
+    "output": "trustbridge_escrow_lifecycle.html",
+    "viewBox": [980, 680],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "standard-path",
+        "label": "Successful Execution Rail",
+        "focus": ["funding_active", "goal_achieved", "evidence_review", "tranche_paid", "protocol_settled"],
+        "note": "Standard crowdfunding success from contribution to full 4-tranche payout."
+      },
+      {
+        "id": "dispute-and-refund",
+        "label": "Dispute & Refund Paths",
+        "focus": ["evidence_review", "revision_required", "refund_unlocked"],
+        "note": "Non-custodial contributor protection if milestones fail or goal is unmet."
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "Milestone Escrow Lifecycle" },
+    { "id": "review", "label": "Consensus & Audit Gates" },
+    { "id": "terminal", "label": "Terminal Safety Exits" }
+  ],
+  "states": [
+    { "id": "funding_active", "type": "start", "label": "Funding Active", "sublabel": "10-20 ETH window", "lane": "main", "col": 0, "step": "01", "tag": "deposit" },
+    { "id": "goal_achieved", "type": "active", "label": "Goal Achieved", "sublabel": "Vault locked", "lane": "main", "col": 1, "step": "02", "tag": "locked" },
+    { "id": "evidence_review", "type": "decision", "label": "Evidence Review", "sublabel": "IPFS hash + verifiers", "lane": "main", "col": 2, "step": "03", "tag": "consensus" },
+    { "id": "tranche_paid", "type": "waiting", "label": "Tranche Paid", "sublabel": "20%->25%->25%->30%", "lane": "main", "col": 3, "step": "04", "tag": "pull-pay" },
+    { "id": "protocol_settled", "type": "success", "label": "Protocol Settled", "sublabel": "10,000 BPS paid", "lane": "main", "col": 4, "step": "05", "tag": "complete" },
+    { "id": "revision_required", "type": "waiting", "label": "Revision Required", "sublabel": "verifier dispute", "lane": "review", "col": 0, "tag": "rejected" },
+    { "id": "refund_unlocked", "type": "failure", "label": "Refund Unlocked", "sublabel": "claimable ETH", "lane": "terminal", "col": 0, "tag": "terminal" }
+  ],
+  "transitions": [
+    { "from": "evidence_review", "to": "revision_required", "variant": "security", "route": "straight", "fromSide": "bottom", "toSide": "top" },
+    { "from": "revision_required", "to": "refund_unlocked", "variant": "security", "route": "straight", "fromSide": "bottom", "toSide": "top" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "4-Tranche Execution Rail",
+      "items": [
+        "Milestones disburse sequentially: 20% -> 25% -> 25% -> 30% (total 10,000 BPS)",
+        "Zero upfront bulk disbursement prevents rug pulls and project abandonment",
+        "Funds are withdrawn via pull-payment pattern to prevent reentrancy attacks"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Verifier Multi-Sig Consensus",
+      "items": [
+        "Creator anchors deliverable proofs to IPFS and submits hash on-chain",
+        "Decentralized verifier quorum reviews deliverable against criteria",
+        "Rejection triggers 7-day cure period before escalation to refund"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Non-Custodial Contributor Protection",
+      "items": [
+        "If minimum 10.00 ETH goal is not achieved within deadline, 100% refund unlocked",
+        "If subsequent milestones fail verifier quorum, unspent escrow balance is refundable",
+        "Excess contribution above 20.00 ETH hard cap is refunded in the same block"
+      ]
+    }
+  ]
+}

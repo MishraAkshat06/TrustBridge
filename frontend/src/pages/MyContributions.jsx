@@ -5,11 +5,27 @@ import { HeartHandshake, RotateCcw, CheckCircle2, AlertCircle } from 'lucide-rea
 export default function MyContributions() {
   const { myContributions, requestRefund, setCurrentView, setActiveCampaignId } = useApp();
   const [statusMsg, setStatusMsg] = useState('');
+  const [isError, setIsError] = useState(false);
+  const [loadingRefund, setLoadingRefund] = useState(false);
 
-  function handleRefundClick(id) {
-    const res = requestRefund(id);
-    setStatusMsg(res.msg);
-    setTimeout(() => setStatusMsg(''), 4000);
+  async function handleRefundClick(id) {
+    setLoadingRefund(true);
+    try {
+      const res = await requestRefund(id);
+      if (res && res.success) {
+        setIsError(false);
+        setStatusMsg(`Refund claimed successfully on Sepolia! Tx: ${res.txHash.slice(0, 10)}...`);
+      } else {
+        setIsError(true);
+        setStatusMsg(res?.msg || 'Refund claim failed on chain.');
+      }
+    } catch (err) {
+      setIsError(true);
+      setStatusMsg(err.message || 'Refund claim failed.');
+    } finally {
+      setLoadingRefund(false);
+      setTimeout(() => setStatusMsg(''), 6000);
+    }
   }
 
   return (
@@ -20,23 +36,54 @@ export default function MyContributions() {
       </div>
 
       {statusMsg && (
-        <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-mono text-emerald-700 dark:text-emerald-400 flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+        <div className={`p-3 border rounded-xl text-xs font-mono flex items-center space-x-2 ${
+          isError 
+            ? 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400' 
+            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
+        }`}>
+          {isError ? (
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 flex-shrink-0" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+          )}
           <span>{statusMsg}</span>
         </div>
       )}
 
       {myContributions.length === 0 ? (
-        <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl p-12 text-center space-y-3 shadow-sm">
-          <HeartHandshake className="w-8 h-8 text-[var(--text-muted)] mx-auto" />
-          <h3 className="text-sm font-bold text-[var(--text-primary)]">No active contributions found</h3>
-          <p className="text-xs text-[var(--text-secondary)]">Discover and support milestone-verified hardware and software campaigns.</p>
-          <button
-            onClick={() => setCurrentView('Explore')}
-            className="px-4 py-2 btn-fintech-primary text-xs font-bold cursor-pointer"
-          >
-            Explore Projects
-          </button>
+        <div className="bg-white/80 dark:bg-[var(--bg-surface)] border border-slate-200 dark:border-[var(--border-subtle)] rounded-3xl p-12 sm:p-16 text-center space-y-6 shadow-xl backdrop-blur-xl">
+          {/* 3D Holographic Escrow Cube */}
+          <div className="py-4">
+            <div className="holo-cube-scene">
+              <div className="holo-cube">
+                <div className="holo-face holo-face-front">◈</div>
+                <div className="holo-face holo-face-back">⬡</div>
+                <div className="holo-face holo-face-right">⚡</div>
+                <div className="holo-face holo-face-left">🔒</div>
+                <div className="holo-face holo-face-top">🛡️</div>
+                <div className="holo-face holo-face-bottom">ETH</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 max-w-md mx-auto">
+            <h3 className="text-base font-bold text-slate-900 dark:text-[var(--text-primary)]">
+              No active contributions found
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-[var(--text-secondary)] leading-relaxed">
+              Discover and support milestone-verified hardware and software campaigns with cryptographically enforced escrow.
+            </p>
+          </div>
+
+          <div>
+            <button
+              onClick={() => setCurrentView('Explore')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold font-mono shadow-[0_0_20px_rgba(0,245,160,0.35)] transition-all hover:scale-105 cursor-pointer"
+            >
+              <span>Explore Active Vaults</span>
+              <span>→</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -69,11 +116,12 @@ export default function MyContributions() {
                 </button>
 
                 <button
+                  disabled={loadingRefund}
                   onClick={() => handleRefundClick(item.campaignId)}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold transition-colors cursor-pointer"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Request Refund</span>
+                  <RotateCcw className={`w-3.5 h-3.5 ${loadingRefund ? 'animate-spin' : ''}`} />
+                  <span>{loadingRefund ? 'Claiming...' : 'Request Refund'}</span>
                 </button>
               </div>
             </div>
