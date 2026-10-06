@@ -127,9 +127,9 @@
 body {
   background-color: var(--bg-canvas);
   background-image: 
-    radial-gradient(circle at 15% 20%, rgba(0, 245, 160, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(0, 210, 255, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 80% 12%, rgba(2, 132, 199, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 10% 25%, rgba(16, 185, 129, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06) 0%, transparent 50%);
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
@@ -140,6 +140,24 @@ body {
   transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
               color 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
               border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light mode root background wrapper */
+.light-mode-canvas {
+  background: 
+    radial-gradient(circle at 80% 12%, rgba(2, 132, 199, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 10% 25%, rgba(16, 185, 129, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
+    #F8FAFC;
+}
+
+.dark .light-mode-canvas,
+.dark.light-mode-canvas {
+  background: 
+    radial-gradient(circle at 80% 12%, rgba(2, 132, 199, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 10% 25%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.03) 0%, transparent 50%),
+    #07090E;
 }
 
 .dark body {
@@ -459,6 +477,11 @@ html.theme-transitioning *::after {
   100% { transform: rotateY(70deg) rotateZ(0deg); }
 }
 
+@keyframes gyroRotateZ {
+  0% { transform: rotateZ(0deg) rotateX(65deg); }
+  100% { transform: rotateZ(360deg) rotateX(65deg); }
+}
+
 @keyframes float3DLayer1 {
   0%, 100% { transform: translateY(0px) translateZ(35px); }
   50% { transform: translateY(-8px) translateZ(48px); }
@@ -528,6 +551,11 @@ html.theme-transitioning *::after {
 @keyframes progressShimmer {
   0% { transform: translateX(0); }
   100% { transform: translateX(200%); }
+}
+
+@keyframes liquidTrackShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* 3D Holographic Escrow Cube */
@@ -732,17 +760,88 @@ html.theme-transitioning *::after {
 }
 
 :root:not(.dark) .liquid-nav-pill-active {
-  color: #047857 !important;
+  color: #0F172A !important;
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(236, 253, 245, 0.8) 100%
+    rgba(209, 250, 229, 0.8) 45%,
+    rgba(224, 242, 254, 0.8) 100%
   ) !important;
-  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
   box-shadow: 
-    inset 0 1.5px 1px rgba(255, 255, 255, 1),
-    0 6px 18px -4px rgba(16, 185, 129, 0.22) !important;
-  transform: translateY(-1px) !important;
+    inset 0 1.5px 2px rgba(255, 255, 255, 1),
+    0 4px 16px -2px rgba(16, 185, 129, 0.22),
+    0 2px 6px -1px rgba(14, 165, 233, 0.15) !important;
+  font-weight: 700 !important;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Navigation Header Floating Capsule                                        */
+/* ------------------------------------------------------------------------- */
+.navbar-floating-capsule {
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.95),
+    0 12px 30px -8px rgba(15, 23, 42, 0.06);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .navbar-floating-capsule {
+  background: rgba(14, 20, 31, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.12),
+    0 12px 30px -8px rgba(0, 0, 0, 0.7);
+}
+
+/* ------------------------------------------------------------------------- */
+/* Liquid Frosted Glass Elevation Tokens                                     */
+/* ------------------------------------------------------------------------- */
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+    0 16px 36px -10px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(226, 232, 240, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-light:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 1),
+    0 24px 48px -12px rgba(2, 132, 199, 0.12),
+    0 0 0 1px rgba(14, 165, 233, 0.35);
+}
+
+.dark .glass-panel-light {
+  background: rgba(14, 20, 31, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.15),
+    0 16px 36px -10px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark .glass-panel-light:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.25),
+    0 24px 48px -12px rgba(0, 245, 160, 0.15),
+    0 0 0 1px rgba(0, 245, 160, 0.3);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -779,5 +878,62 @@ html.theme-transitioning *::after {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ------------------------------------------------------------------------- */
+/* Collapsible Sliding Glass Navigation Drawer                               */
+/* ------------------------------------------------------------------------- */
+.sidebar-slider {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    rgba(14, 20, 31, 0.75) 100%
+  );
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    0 16px 40px -10px rgba(0, 0, 0, 0.7);
+  border-radius: 28px;
+}
 
+:root:not(.dark) .sidebar-slider {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(240, 249, 255, 0.80) 40%,
+    rgba(255, 255, 255, 0.94) 100%
+  );
+  border: 1px solid rgba(2, 132, 199, 0.18);
+  box-shadow: 
+    inset 0 1.5px 2px rgba(255, 255, 255, 1),
+    0 16px 40px -10px rgba(15, 23, 42, 0.08);
+}
 
+.sidebar-item-active {
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(0, 245, 160, 0.2) 60%,
+    rgba(16, 185, 129, 0.08) 100%
+  ) !important;
+  border: 1px solid rgba(0, 245, 160, 0.4) !important;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    0 4px 14px rgba(0, 245, 160, 0.25) !important;
+  color: #00F5A0 !important;
+}
+
+:root:not(.dark) .sidebar-item-active {
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(16, 185, 129, 0.2) 60%,
+    rgba(2, 132, 199, 0.1) 100%
+  ) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 
+    inset 0 1.5px 2px rgba(255, 255, 255, 1),
+    0 4px 14px rgba(16, 185, 129, 0.22) !important;
+  color: #047857 !important;
+}

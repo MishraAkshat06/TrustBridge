@@ -1,10 +1,31 @@
 import unittest
 import json
+from fastapi.testclient import TestClient
 from app import app
+from database import init_db
+
+class APIClient:
+    def __init__(self, fastapi_app):
+        self._tc = TestClient(fastapi_app)
+
+    def _wrap(self, res):
+        res.get_json = res.json
+        res.get_data = lambda as_text=True: res.text
+        return res
+
+    def get(self, *args, **kwargs):
+        return self._wrap(self._tc.get(*args, **kwargs))
+
+    def post(self, *args, **kwargs):
+        return self._wrap(self._tc.post(*args, **kwargs))
 
 class TestTrustBridgeAPI(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        init_db()
+
     def setUp(self):
-        self.client = app.test_client()
+        self.client = APIClient(app)
 
     def test_health(self):
         res = self.client.get("/api/health")
@@ -22,13 +43,13 @@ class TestTrustBridgeAPI(unittest.TestCase):
         }
         res_pred = self.client.post("/api/predict", json=payload)
         self.assertEqual(res_pred.status_code, 200)
-        data = res_pred.get_json()
+        data = res_pred.get_json()["data"]
         self.assertIn("success_probability", data)
         self.assertIn("disclaimer", data)
 
         res_risk = self.client.post("/api/risk", json=payload)
         self.assertEqual(res_risk.status_code, 200)
-        risk_data = res_risk.get_json()
+        risk_data = res_risk.get_json()["data"]
         self.assertIn("anomaly", risk_data)
         self.assertIn("risk_analysis", risk_data)
 
@@ -49,14 +70,14 @@ class TestTrustBridgeAPI(unittest.TestCase):
         # Analyzer
         res = self.client.post("/api/ai/analyze", json=payload)
         self.assertEqual(res.status_code, 200)
-        self.assertIn("completeness_score", res.get_json())
-        self.assertIn("disclaimer", res.get_json())
+        self.assertIn("completeness_score", res.get_json()["data"])
+        self.assertIn("disclaimer", res.get_json()["data"])
 
         # Explainer
         res_exp = self.client.post("/api/ai/explain", json=payload)
         self.assertEqual(res_exp.status_code, 200)
-        self.assertIn("backer_summary", res_exp.get_json())
-        self.assertIn("disclaimer", res_exp.get_json())
+        self.assertIn("backer_summary", res_exp.get_json()["data"])
+        self.assertIn("disclaimer", res_exp.get_json()["data"])
 
         # Evidence Reviewer
         evidence_payload = {
@@ -69,8 +90,8 @@ class TestTrustBridgeAPI(unittest.TestCase):
         }
         res_ev = self.client.post("/api/ai/review-evidence", json=evidence_payload)
         self.assertEqual(res_ev.status_code, 200)
-        self.assertIn("verification_checklist", res_ev.get_json())
-        self.assertIn("disclaimer", res_ev.get_json())
+        self.assertIn("verification_checklist", res_ev.get_json()["data"])
+        self.assertIn("disclaimer", res_ev.get_json()["data"])
 
     def test_campaign_crud(self):
         payload = {
@@ -86,7 +107,7 @@ class TestTrustBridgeAPI(unittest.TestCase):
 
         res_get = self.client.get("/api/campaigns/zk-engine-01")
         self.assertEqual(res_get.status_code, 200)
-        self.assertEqual(res_get.get_json()["title"], "ZK Engine")
+        self.assertEqual(res_get.get_json()["data"]["title"], "ZK Engine")
 
 if __name__ == "__main__":
     unittest.main()

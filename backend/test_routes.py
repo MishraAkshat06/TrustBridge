@@ -1,12 +1,37 @@
 import os
 import json
 import unittest
+from fastapi.testclient import TestClient
 from app import app
-from database import get_db
+from database import get_db, init_db
+
+class APIClient:
+    def __init__(self, fastapi_app):
+        self._tc = TestClient(fastapi_app)
+
+    def _wrap(self, res):
+        res.get_json = res.json
+        return res
+
+    def get(self, *args, **kwargs):
+        return self._wrap(self._tc.get(*args, **kwargs))
+
+    def post(self, *args, **kwargs):
+        return self._wrap(self._tc.post(*args, **kwargs))
+
+    def put(self, *args, **kwargs):
+        return self._wrap(self._tc.put(*args, **kwargs))
+
+    def delete(self, *args, **kwargs):
+        return self._wrap(self._tc.delete(*args, **kwargs))
 
 class BackendSecurityTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        init_db()
+
     def setUp(self):
-        self.client = app.test_client()
+        self.client = APIClient(app)
 
     def test_01_health_envelope(self):
         res = self.client.get("/api/health")

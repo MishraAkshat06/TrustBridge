@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, Sparkles, User, Minimize2 } from 'lucide-react';
+import { API_BASE } from '../services/api';
 
 const SUGGESTED_PROMPTS = [
   'Explain 4-tranche escrow',
@@ -36,7 +37,7 @@ export default function Chatbot() {
     setIsTyping(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: query })
